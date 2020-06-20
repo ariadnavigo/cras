@@ -24,3 +24,4 @@ int tasklst_tasks_todo(TaskLst tasks);
 int tasklst_tasks_done(TaskLst tasks);
 int tasklst_read_from_file(TaskLst *tasks, FILE *fp);
 void tasklst_write_to_file(FILE *fp, TaskLst tasks);
+
