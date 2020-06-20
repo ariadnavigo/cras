@@ -89,7 +89,7 @@ read_crasfile(TaskLst *tasks, const char *crasfile)
 	if (read_stat < 0)
 		die("Parsing error: task file corrupted.");
 
-	if (tasklst_expired(*tasks) == 0)
+	if (tasklst_expired(*tasks) > 0)
 		die("Current task file expired: Set a new one!");
 }
 

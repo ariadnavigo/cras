@@ -44,7 +44,7 @@ tasklst_set_expiration(TaskLst *tasks)
 int
 tasklst_expired(TaskLst tasks)
 {
-	return ((time(NULL) - tasks.expiry) > TASK_LST_EXPIRY) ? 0 : -1;
+	return (time(NULL) > tasks.expiry) ? 1 : 0;
 }
 
 int
