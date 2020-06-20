@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,7 +110,7 @@ tasklst_write_to_file(FILE *fp, TaskLst tasks)
 {
 	int i;
 
-	fprintf(fp, "%zu\n", tasks.expiry);
+	fprintf(fp, "%" PRId64 "\n", tasks.expiry);
 
 	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
 		if (tasks.status[i] == TASK_VOID)

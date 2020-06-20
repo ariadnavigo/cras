@@ -11,7 +11,7 @@ enum {
 };
 
 typedef struct {
-	time_t expiry;
+	int64_t expiry;
 	int status[TASK_LST_MAX_NUM];
 	char tdesc[TASK_LST_MAX_NUM][TASK_LST_DESC_MAX_SIZE];
 } TaskLst;
