@@ -86,6 +86,10 @@ This will install the binary under $PREFIX/bin, as defined by your environment,
  or /usr/local/bin by default. The Makefile supports the $DESTDIR variable as 
 well.
 
+## Cultural trivia
+_cras_ means 'tomorrow' in Latin, hence the English word _procrastination_ 
+means, literally, 'the act of posponing things for tomorrow.'
+
 ## License
 Cras is licensed under the Apache Public License version 2.0. See LICENSE
  file for copyright and license details.
