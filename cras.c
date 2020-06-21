@@ -12,12 +12,16 @@ static char *argv0; /* Required here by arg.h */
 #include "arg.h"
 #include "tasklst.h"
 
+#define TASK_TODO_STR "\033[31;1m[TODO]\033[0m"
+#define TASK_DONE_STR "\033[32;1m[DONE]\033[0m"
+
 enum {
 	SHORT_OUTPUT,
 	LONG_OUTPUT
 };
 
 static void die(const char *fmt, ...);
+static char *print_task_status(TaskLst tasks, int num);
 static void print_short_output(TaskLst tasks);
 static void print_output(TaskLst tasks);
 static void read_crasfile(TaskLst *tasks, const char *crasfile);
@@ -48,6 +52,17 @@ static void die(const char *fmt, ...)
 	exit(1);
 }
 
+static char *
+print_task_status(TaskLst tasks, int num)
+{
+	if (tasks.status[num] == TASK_TODO)
+		return TASK_TODO_STR;
+	else if (tasks.status[num] == TASK_DONE)
+		return TASK_DONE_STR;
+	else
+		return "";
+}
+
 static void
 print_short_output(TaskLst tasks)
 {
@@ -64,9 +79,8 @@ print_output(TaskLst tasks)
 	
 	for(i = 0; i < TASK_LST_MAX_NUM; ++i) {
 		if (tasks.status[i] != TASK_VOID)
-			printf("#%02d [%s] %s\n", i + 1, 
-			       (tasks.status[i] == TASK_TODO) ? "TODO" : "DONE",
-			       tasks.tdesc[i]); 
+			printf("#%02d %s %s\n", i + 1, 
+			       print_task_status(tasks, i), tasks.tdesc[i]); 
 	}
 
 	if (i > 0)
