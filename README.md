@@ -18,11 +18,12 @@ $ make
 
 ### Set up your task list
 To start using Cras, you first need to set up your task list. This is done by 
-using the -s command line option and entering a short description of your task 
-in a new line. End your list hitting EOF (Ctrl+D) in a *blank line*.
+using the -s command line option and a file name. Then enter a short 
+description of your task in a new line. End your list hitting EOF (Ctrl+D) in a
+ *blank line*.
 
 ```
-$ cras -s
+$ cras -s mytask
 First task
 Second task
 Third task
@@ -31,16 +32,16 @@ Third task
 You may also pipe in a text file if you so prefer.
 
 ```
-$ cras -s < mytasklist
+$ cras -s todo-today < mytasklist
 ```
 
 ### Printing out your current list
 To print out your current list, you may use either of two options: a long, 
 detailed output, and a short summary (ideal for status bars). The long-form 
-output is read just by running Cras without any further options:
+output is read just by running Cras on your file without any further options:
 
 ```
-$ cras
+$ cras my-dev-todo
 Tasks due for: Sat Jun 20 15:57:28 2020
 
 #01 [TODO] Write README.md
@@ -53,7 +54,7 @@ Tasks due for: Sat Jun 20 15:57:28 2020
 The short-form output is shown by using the -o option:
 
 ```
-$ cras -o
+$ cras -o my-dev-todo
 3/0/3 to do/done/total
 ```
 
@@ -62,8 +63,8 @@ When you've completed a task, use -t and the task number (as shown by the
 long-form output) to mark it as done.
 
 ```
-$ cras -t 2
-$ cras
+$ cras -t 2 my-dev-todo
+$ cras my-dev-todo
 Tasks due for: Sat Jun 20 15:57:28 2020
 
 #01 [TODO] Write README.md

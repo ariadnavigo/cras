@@ -15,9 +15,18 @@ static char *argv0; /* Required here by arg.h */
 #define TASK_TODO_STR "\033[31;1m[TODO]\033[0m"
 #define TASK_DONE_STR "\033[32;1m[DONE]\033[0m"
 
+#define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -t/-T */
+
 enum {
 	SHORT_OUTPUT,
 	LONG_OUTPUT
+};
+
+enum {
+	DEF_MODE,
+	SET_MODE,
+	OUT_MODE,
+	MARK_MODE
 };
 
 static void die(const char *fmt, ...);
@@ -31,13 +40,7 @@ static void read_user_input(TaskLst *tasks, FILE *fp);
 static void usage(void);
 static void set_tasks_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode);
-static void mark_tasks_mode(const char *crasfile, const char *id, int mode);
-
-/* 
- * crasfile_path defined here just for testing. It will be moved later to 
- * config.(def.)h 
- */
-static char crasfile_path[] = "crasfile";
+static void mark_tasks_mode(const char *crasfile, const char *id, int value);
 
 static void die(const char *fmt, ...)
 {
@@ -170,7 +173,7 @@ output_mode(const char *crasfile, int mode)
 }
 
 static void
-mark_tasks_mode(const char *crasfile, const char *id, int mode)
+mark_tasks_mode(const char *crasfile, const char *id, int value)
 {
 	int tasknum;
 	char *endptr;
@@ -178,13 +181,16 @@ mark_tasks_mode(const char *crasfile, const char *id, int mode)
 
 	tasknum = strtol(id, &endptr, 10);
 	if (endptr[0] != '\0')
-		die("%s not a number", id);
+		die("'%s' not a number.", id);
 
 	tasklst_init(&tasks);
 	read_crasfile(&tasks, crasfile);
 
+	if (tasknum <= 0)
+		die("Task number must be greater than zero.");
+
 	if (tasknum <= tasklst_tasks_total(tasks))
-		tasks.status[tasknum - 1] = mode;
+		tasks.status[tasknum - 1] = value;
 	else
 		die("Task #%d does not exist.", tasknum);
 
@@ -194,26 +200,47 @@ mark_tasks_mode(const char *crasfile, const char *id, int mode)
 int
 main(int argc, char *argv[])
 {
+	char numarg[NUMARG_SIZE];
+	int mode, task_value;
+
+	mode = DEF_MODE;
 	ARGBEGIN {
 		case 's':
-			set_tasks_mode(crasfile_path);
-			return 0;
+			mode = SET_MODE;
+			break;
 		case 'o':
-			output_mode(crasfile_path, SHORT_OUTPUT);
-			return 0;
+			mode = OUT_MODE;
+			break;
 		case 't':
-			mark_tasks_mode(crasfile_path, EARGF(usage()),
-			                TASK_DONE);
-			return 0;
+			mode = MARK_MODE;
+			task_value = TASK_DONE;
+			strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+			break;
 		case 'T':
-			mark_tasks_mode(crasfile_path, EARGF(usage()), 
-			                TASK_TODO);
-			return 0;
+			mode = MARK_MODE;
+			task_value = TASK_TODO;
+			strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+			break;
 		default:
 			usage(); /* usage() dies, so nothing else needed. */
 	} ARGEND;
 
+	if (argc <= 0)
+		usage();
+
+	switch (mode) {
+		case SET_MODE:
+			set_tasks_mode(argv[0]);
+			return 0;
+		case OUT_MODE:
+			output_mode(argv[0], SHORT_OUTPUT);
+			return 0;
+		case MARK_MODE:
+			mark_tasks_mode(argv[0], numarg, task_value);
+			return 0;
+	}
+	
 	/* Default behavior: long-form output */
-	output_mode(crasfile_path, LONG_OUTPUT);
+	output_mode(argv[0], LONG_OUTPUT);
 	return 0;
 }
