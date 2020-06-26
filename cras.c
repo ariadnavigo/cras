@@ -143,7 +143,7 @@ read_user_input(TaskLst *tasks, FILE *fp)
 static void
 usage(void)
 {
-	die("[STUB: Usage info]");
+	die("usage: cras [-o|-s] [-t|-T num] file");
 }
 
 static void
