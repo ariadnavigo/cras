@@ -12,9 +12,6 @@ static char *argv0; /* Required here by arg.h */
 #include "arg.h"
 #include "tasklst.h"
 
-#define TASK_TODO_STR "\033[31;1m[TODO]\033[0m"
-#define TASK_DONE_STR "\033[32;1m[DONE]\033[0m"
-
 #define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -t/-T */
 
 enum {
@@ -30,17 +27,22 @@ enum {
 };
 
 static void die(const char *fmt, ...);
-static char *print_task_status(TaskLst tasks, int num);
+static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_short_output(TaskLst tasks);
-static void print_output(TaskLst tasks);
+static void print_output(TaskLst tasks, int color);
 static void read_crasfile(TaskLst *tasks, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst tasks);
 static void read_user_input(TaskLst *tasks, FILE *fp);
 
 static void usage(void);
 static void set_tasks_mode(const char *crasfile);
-static void output_mode(const char *crasfile, int mode);
+static void output_mode(const char *crasfile, int mode, int color);
 static void mark_tasks_mode(const char *crasfile, const char *id, int value);
+
+static const char task_todo_color[] = "\033[31;1m";
+static const char task_done_color[] = "\033[32;1m";
+static const char task_todo_str[] = "[TODO]";
+static const char task_done_str[] = "[DONE]";
 
 static void die(const char *fmt, ...)
 {
@@ -55,15 +57,18 @@ static void die(const char *fmt, ...)
 	exit(1);
 }
 
-static char *
-print_task_status(TaskLst tasks, int num)
+static void
+printf_color(const char *ansi_color, const char *fmt, ...)
 {
-	if (tasks.status[num] == TASK_TODO)
-		return TASK_TODO_STR;
-	else if (tasks.status[num] == TASK_DONE)
-		return TASK_DONE_STR;
-	else
-		return "";
+	va_list ap;
+	va_start(ap, fmt);
+
+	printf("%s", (ansi_color != NULL) ? ansi_color : "");
+
+	vprintf(fmt, ap);
+	va_end(ap);
+
+	printf("%s", (ansi_color != NULL) ? "\033[0m" : "");
 }
 
 static void
@@ -74,16 +79,25 @@ print_short_output(TaskLst tasks)
 }
 
 static void
-print_output(TaskLst tasks)
+print_output(TaskLst tasks, int color)
 {
 	int i;
 
 	printf("Tasks due for: %s\n", ctime(&tasks.expiry));
-	
+
 	for(i = 0; i < TASK_LST_MAX_NUM; ++i) {
-		if (tasks.status[i] != TASK_VOID)
-			printf("#%02d %s %s\n", i + 1, 
-			       print_task_status(tasks, i), tasks.tdesc[i]); 
+		if (tasks.status[i] == TASK_VOID)
+			continue;
+
+		printf("#%02d ", i + 1);
+		if (tasks.status[i] == TASK_TODO)
+			printf_color(((color > 0) ? task_todo_color : NULL), 
+			             "%s ", task_todo_str);
+		else /* TASK_DONE */
+			printf_color(((color > 0) ? task_done_color : NULL), 
+			             "%s ", task_done_str);
+
+		printf("%s\n", tasks.tdesc[i]);
 	}
 
 	if (i > 0)
@@ -159,7 +173,7 @@ set_tasks_mode(const char *crasfile)
 }
 
 static void
-output_mode(const char *crasfile, int mode)
+output_mode(const char *crasfile, int mode, int color)
 {
 	TaskLst tasks;
 
@@ -169,7 +183,7 @@ output_mode(const char *crasfile, int mode)
 	if (mode == SHORT_OUTPUT)
 		print_short_output(tasks);
 	else
-		print_output(tasks);
+		print_output(tasks, color);
 }
 
 static void
@@ -201,7 +215,13 @@ int
 main(int argc, char *argv[])
 {
 	char numarg[NUMARG_SIZE];
-	int mode, task_value;
+	int color, mode, task_value;
+
+	/* NO_COLOR support (https://no-color.org/) */
+	if (getenv("NO_COLOR") != NULL)
+		color = 0;
+	else
+		color = 1;
 
 	mode = DEF_MODE;
 	ARGBEGIN {
@@ -233,7 +253,7 @@ main(int argc, char *argv[])
 			set_tasks_mode(argv[0]);
 			return 0;
 		case OUT_MODE:
-			output_mode(argv[0], SHORT_OUTPUT);
+			output_mode(argv[0], SHORT_OUTPUT, color);
 			return 0;
 		case MARK_MODE:
 			mark_tasks_mode(argv[0], numarg, task_value);
@@ -241,6 +261,6 @@ main(int argc, char *argv[])
 	}
 	
 	/* Default behavior: long-form output */
-	output_mode(argv[0], LONG_OUTPUT);
+	output_mode(argv[0], LONG_OUTPUT, color);
 	return 0;
 }

@@ -58,6 +58,16 @@ $ cras -o my-dev-todo
 3/0/3 to do/done/total
 ```
 
+#### Deactivate colors in output
+By default, the long-form output makes use of ANSI escapes to output in color. 
+This can lead to corrupted output if your terminal doesn't support ANSI escapes
+ or you're redirecting output to somewhere else. Cras supports ```NO_COLOR``` 
+to switch off color in output:
+
+```
+$ NO_COLOR=1 cras my-dev-todo
+```
+
 ### Marking a task as done
 When you've completed a task, use -t and the task number (as shown by the 
 long-form output) to mark it as done.
