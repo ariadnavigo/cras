@@ -14,6 +14,11 @@ Build by using:
 $ make
 ```
 
+Customize the build process by changing config.mk to suit your needs.
+
+User configuration is performed by modifying config.h. A set of defaults is 
+provided in config.def.h.
+
 ## Usage
 
 ### Set up your task list

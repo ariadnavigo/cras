@@ -10,6 +10,7 @@
 
 static char *argv0; /* Required here by arg.h */
 #include "arg.h"
+#include "config.h"
 #include "tasklst.h"
 
 #define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -t/-T */
@@ -38,11 +39,6 @@ static void usage(void);
 static void set_tasks_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode, int color);
 static void mark_tasks_mode(const char *crasfile, const char *id, int value);
-
-static const char task_todo_color[] = "\033[31;1m";
-static const char task_done_color[] = "\033[32;1m";
-static const char task_todo_str[] = "[TODO]";
-static const char task_done_str[] = "[DONE]";
 
 static void die(const char *fmt, ...)
 {
