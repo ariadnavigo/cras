@@ -221,39 +221,39 @@ main(int argc, char *argv[])
 
 	mode = DEF_MODE;
 	ARGBEGIN {
-		case 's':
-			mode = SET_MODE;
-			break;
-		case 'o':
-			mode = OUT_MODE;
-			break;
-		case 't':
-			mode = MARK_MODE;
-			task_value = TASK_DONE;
-			strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
-			break;
-		case 'T':
-			mode = MARK_MODE;
-			task_value = TASK_TODO;
-			strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
-			break;
-		default:
-			usage(); /* usage() dies, so nothing else needed. */
+	case 's':
+		mode = SET_MODE;
+		break;
+	case 'o':
+		mode = OUT_MODE;
+		break;
+	case 't':
+		mode = MARK_MODE;
+		task_value = TASK_DONE;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
+	case 'T':
+		mode = MARK_MODE;
+		task_value = TASK_TODO;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
+	default:
+		usage(); /* usage() dies, so nothing else needed. */
 	} ARGEND;
 
 	if (argc <= 0)
 		usage();
 
 	switch (mode) {
-		case SET_MODE:
-			set_tasks_mode(argv[0]);
-			return 0;
-		case OUT_MODE:
-			output_mode(argv[0], SHORT_OUTPUT, color);
-			return 0;
-		case MARK_MODE:
-			mark_tasks_mode(argv[0], numarg, task_value);
-			return 0;
+	case SET_MODE:
+		set_tasks_mode(argv[0]);
+		return 0;
+	case OUT_MODE:
+		output_mode(argv[0], SHORT_OUTPUT, color);
+		return 0;
+	case MARK_MODE:
+		mark_tasks_mode(argv[0], numarg, task_value);
+		return 0;
 	}
 	
 	/* Default behavior: long-form output */
