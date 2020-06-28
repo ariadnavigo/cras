@@ -222,17 +222,25 @@ main(int argc, char *argv[])
 	mode = DEF_MODE;
 	ARGBEGIN {
 	case 's':
+		if (mode != DEF_MODE)
+			usage();
 		mode = SET_MODE;
 		break;
 	case 'o':
+		if (mode != DEF_MODE)
+			usage();
 		mode = OUT_MODE;
 		break;
 	case 't':
+		if (mode != DEF_MODE)
+			usage();
 		mode = MARK_MODE;
 		task_value = TASK_DONE;
 		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'T':
+		if (mode != DEF_MODE)
+			usage();
 		mode = MARK_MODE;
 		task_value = TASK_TODO;
 		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
