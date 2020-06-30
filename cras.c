@@ -162,7 +162,7 @@ read_user_input(TaskLst *tasks, FILE *fp)
 static void
 usage(void)
 {
-	die("usage: cras [-o|-s] [-t|-T num] file");
+	die("usage: cras [-osv] [-tT num] file");
 }
 
 static void
@@ -241,6 +241,10 @@ main(int argc, char *argv[])
 		if (mode != DEF_MODE)
 			usage();
 		mode = OUT_MODE;
+		break;
+	case 'v':
+		die("Cras %s. See LICENSE file for copyright and license "
+		    "details.", VERSION);
 		break;
 	case 't':
 		if (mode != DEF_MODE)
