@@ -72,8 +72,9 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 static void
 print_task(TaskLst tasks, int i, int color)
 {
-	/* if (tasks.status[i] == TASK_VOID)
-		continue; */
+	/* Null tasks are never printed */
+	if (tasks.status[i] == TASK_VOID)
+		return;
 
 	printf("#%02d ", i + 1);
 	if (tasks.status[i] == TASK_TODO)
@@ -101,12 +102,8 @@ print_output(TaskLst tasks, int color)
 
 	printf("Tasks due for: %s\n", ctime(&tasks.expiry));
 
-	for(i = 0; i < TASK_LST_MAX_NUM; ++i) {
-		if (tasks.status[i] == TASK_VOID)
-			continue;
-
+	for(i = 0; i < TASK_LST_MAX_NUM; ++i)
 		print_task(tasks, i, color);
-	}
 
 	if (i > 0)
 		putchar('\n');
