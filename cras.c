@@ -29,6 +29,7 @@ enum {
 
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
+static void print_task(TaskLst tasks, int i, int color);
 static void print_short_output(TaskLst tasks);
 static void print_output(TaskLst tasks, int color);
 static void read_crasfile(TaskLst *tasks, const char *crasfile);
@@ -38,7 +39,8 @@ static void read_user_input(TaskLst *tasks, FILE *fp);
 static void usage(void);
 static void set_tasks_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode, int color);
-static void mark_tasks_mode(const char *crasfile, const char *id, int value);
+static void mark_tasks_mode(const char *crasfile, const char *id, int value, 
+                            int color);
 
 static void die(const char *fmt, ...)
 {
@@ -68,6 +70,24 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 }
 
 static void
+print_task(TaskLst tasks, int i, int color)
+{
+	/* if (tasks.status[i] == TASK_VOID)
+		continue; */
+
+	printf("#%02d ", i + 1);
+	if (tasks.status[i] == TASK_TODO)
+		printf_color(((color > 0) ? task_todo_color : NULL), 
+		             "%s ", task_todo_str);
+	else /* TASK_DONE */
+		printf_color(((color > 0) ? task_done_color : NULL), 
+		             "%s ", task_done_str);
+
+	printf("%s\n", tasks.tdesc[i]);
+}
+
+
+static void
 print_short_output(TaskLst tasks)
 {
 	printf("%d/%d/%d to do/done/total\n", tasklst_tasks_todo(tasks),
@@ -85,15 +105,7 @@ print_output(TaskLst tasks, int color)
 		if (tasks.status[i] == TASK_VOID)
 			continue;
 
-		printf("#%02d ", i + 1);
-		if (tasks.status[i] == TASK_TODO)
-			printf_color(((color > 0) ? task_todo_color : NULL), 
-			             "%s ", task_todo_str);
-		else /* TASK_DONE */
-			printf_color(((color > 0) ? task_done_color : NULL), 
-			             "%s ", task_done_str);
-
-		printf("%s\n", tasks.tdesc[i]);
+		print_task(tasks, i, color);
 	}
 
 	if (i > 0)
@@ -183,7 +195,7 @@ output_mode(const char *crasfile, int mode, int color)
 }
 
 static void
-mark_tasks_mode(const char *crasfile, const char *id, int value)
+mark_tasks_mode(const char *crasfile, const char *id, int value, int color)
 {
 	int tasknum;
 	char *endptr;
@@ -205,6 +217,8 @@ mark_tasks_mode(const char *crasfile, const char *id, int value)
 		die("Task #%d does not exist.", tasknum);
 
 	write_crasfile(crasfile, tasks);
+
+	print_task(tasks, tasknum - 1, color);
 }
 
 int
@@ -260,7 +274,7 @@ main(int argc, char *argv[])
 		output_mode(argv[0], SHORT_OUTPUT, color);
 		return 0;
 	case MARK_MODE:
-		mark_tasks_mode(argv[0], numarg, task_value);
+		mark_tasks_mode(argv[0], numarg, task_value, color);
 		return 0;
 	}
 	
