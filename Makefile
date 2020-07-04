@@ -33,8 +33,12 @@ install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f cras ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/cras
+	mkdir -p ${DESTDIR}${MANPREFIX}/man1
+	sed "s/VERSION/${VERSION}/g" cras.1\
+		> ${DESTDIR}${MANPREFIX}/man1/cras.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/cras.1
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/cras
+	rm -f ${DESTDIR}${PREFIX}/bin/cras ${DESTDIR}${MANPREFIX}/man1/cras.1
 
 .PHONY: all options clean install uninstall
