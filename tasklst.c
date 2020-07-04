@@ -37,9 +37,9 @@ tasklst_init(TaskLst *tasks)
 }
 
 void
-tasklst_set_expiration(TaskLst *tasks)
+tasklst_set_expiration(TaskLst *tasks, int64_t delta)
 {
-	tasks->expiry = time(NULL) + TASK_LST_EXPIRY;
+	tasks->expiry = time(NULL) + delta;
 }
 
 int

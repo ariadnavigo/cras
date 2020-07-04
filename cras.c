@@ -173,7 +173,7 @@ set_tasks_mode(const char *crasfile)
 	tasklst_init(&tasks);
 	read_user_input(&tasks, stdin); /* Only stdin for now */
 	
-	tasklst_set_expiration(&tasks);
+	tasklst_set_expiration(&tasks, crasfile_expiry);
 	write_crasfile(crasfile, tasks);
 }
 

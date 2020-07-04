@@ -2,7 +2,6 @@
 
 #define TASK_LST_MAX_NUM 11
 #define TASK_LST_DESC_MAX_SIZE 64
-#define TASK_LST_EXPIRY 86400 /* 86400 secs = 24 hrs */
 
 enum {
 	TASK_VOID,
@@ -17,7 +16,7 @@ typedef struct {
 } TaskLst;
 
 void tasklst_init(TaskLst *tasks);
-void tasklst_set_expiration(TaskLst *tasks);
+void tasklst_set_expiration(TaskLst *tasks, int64_t delta);
 int tasklst_expired(TaskLst tasks);
 int tasklst_tasks_total(TaskLst tasks);
 int tasklst_tasks_todo(TaskLst tasks);
