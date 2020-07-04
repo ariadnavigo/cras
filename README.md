@@ -20,30 +20,9 @@ User configuration is performed by modifying config.h. A set of defaults is
 provided in config.def.h.
 
 ## Usage
-
-### Set up your task list
-To start using Cras, you first need to set up your task list. This is done by 
-using the -s command line option and a file name. Then enter a short 
-description of your task in a new line. End your list hitting EOF (Ctrl+D) in a
- *blank line*.
-
-```
-$ cras -s mytask
-First task
-Second task
-Third task
-```
-
-You may also pipe in a text file if you so prefer.
-
-```
-$ cras -s todo-today < mytasklist
-```
-
-### Printing out your current list
-To print out your current list, you may use either of two options: a long, 
-detailed output, and a short summary (ideal for status bars). The long-form 
-output is read just by running Cras on your file without any further options:
+Cras reads a task list from a file that is passed as an argument through the 
+command line. With no further options added, the default behavior is to output
+the pending tasks, but only if the expiration time has not passed yet.
 
 ```
 $ cras my-dev-todo
@@ -56,40 +35,14 @@ Tasks due for: Sat Jun 20 15:57:28 2020
 3/0/3 to do/done/total
 ```
 
-The short-form output is shown by using the -o option:
+To set a task list, pass the -s option and the name of the file that will hold
+ the list. The tasks will be read from standard input, each line being a new 
+task. Cras stops reading when it reaches EOF.
 
-```
-$ cras -o my-dev-todo
-3/0/3 to do/done/total
-```
+The -t and -T, followed by the task number, mark the task as done or pending, 
+respectively.
 
-#### Deactivate colors in output
-By default, the long-form output makes use of ANSI escapes to output in color. 
-This can lead to corrupted output if your terminal doesn't support ANSI escapes
- or you're redirecting output to somewhere else. Cras supports ```NO_COLOR``` 
-to switch off color in output:
-
-```
-$ NO_COLOR=1 cras my-dev-todo
-```
-
-### Marking a task as done
-When you've completed a task, use -t and the task number (as shown by the 
-long-form output) to mark it as done.
-
-```
-$ cras -t 2 my-dev-todo
-$ cras my-dev-todo
-Tasks due for: Sat Jun 20 15:57:28 2020
-
-#01 [TODO] Write README.md
-#02 [DONE] Set up git repo for Cras
-#03 [TODO] Succeed in life
-
-2/1/3 to do/done/total
-```
-
-If you need to mark a task again as pending, use -T.
+For further usage information, please refer to the cras(1) manual page.
 
 ## Install
 You may install Cras by running the following command as root:
