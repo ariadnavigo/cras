@@ -4,8 +4,9 @@ Cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .B cras
 .RB [ \-osv ]
-.RB [ \-tT\ num ]
-.RB file
+.RB [ \-tT 
+.IR num  ]
+.I file
 .SH DESCRIPTION
 Cras is an unapologetic daily task planner and manager for your terminal and WM
 status bar. It holds your tasks only for a limited amount of time (24 hours, by
@@ -17,13 +18,18 @@ marking a task as done.
 Switch to short-form output.
 .TP
 .B \-s
-Save from standard input into file.
+Save from standard input into 
+.I file.
 .TP
-.B \-t\ num
-Mark task num as done.
+.BI \-t " num"
+Mark task 
+.I num 
+as done.
 .TP
-.B \-T\ num
-Mark task num as pending.
+.BI \-T " num"
+Mark task
+.I num 
+as pending.
 .TP
 .B \-v
 Show version information and exit.
@@ -37,6 +43,11 @@ it. Use -t to mark a task as done and -T to mark it back as pending.
 
 Running Cras with no options outputs the task list. For a summary, use the -o
 flag; this short-form output is suitable for printing to WM status bars.
+.SH ENVIRONMENT VARIABLES
+Execution of Cras is affected by the following environment variables:
+.TP
+.B NO_COLOR
+Setting it to any value disables ANSI color escapes on output.
 .SH CONFIGURATION
 Cras is configured by creating a custom config.h and recompiling the source 
 code.
