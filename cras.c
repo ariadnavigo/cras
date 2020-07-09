@@ -91,7 +91,7 @@ print_task(TaskLst tasks, int i, int color)
 static void
 print_short_output(TaskLst tasks)
 {
-	printf("%d/%d/%d to do/done/total\n", tasklst_tasks_todo(tasks),
+	printf("%d/%d/%d", tasklst_tasks_todo(tasks),
 	       tasklst_tasks_done(tasks), tasklst_tasks_total(tasks));
 }
 
@@ -109,6 +109,7 @@ print_output(TaskLst tasks, int color)
 		putchar('\n');
 
 	print_short_output(tasks);
+	printf(" to do/done/total");
 }
 
 static void
@@ -189,6 +190,8 @@ output_mode(const char *crasfile, int mode, int color)
 		print_short_output(tasks);
 	else
 		print_output(tasks, color);
+
+	putchar('\n');
 }
 
 static void
