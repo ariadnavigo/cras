@@ -29,18 +29,17 @@ enum {
 
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
-static void print_task(TaskLst tasks, int i, int color);
+static void print_task(TaskLst tasks, int i);
 static void print_short_output(TaskLst tasks);
-static void print_output(TaskLst tasks, int color);
+static void print_output(TaskLst tasks);
 static void read_crasfile(TaskLst *tasks, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst tasks);
 static void read_user_input(TaskLst *tasks, FILE *fp);
 
 static void usage(void);
 static void set_tasks_mode(const char *crasfile);
-static void output_mode(const char *crasfile, int mode, int color);
-static void mark_tasks_mode(const char *crasfile, const char *id, int value, 
-                            int color);
+static void output_mode(const char *crasfile, int mode);
+static void mark_tasks_mode(const char *crasfile, const char *id, int value);
 
 static void die(const char *fmt, ...)
 {
@@ -70,19 +69,28 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 }
 
 static void
-print_task(TaskLst tasks, int i, int color)
+print_task(TaskLst tasks, int i)
 {
+	const char *todo_color, *done_color;
+
+	/* NO_COLOR support (https://no-color.org/) */
+	if (getenv("NO_COLOR") != NULL) {
+		todo_color = NULL;
+		done_color = NULL;
+	} else {
+		todo_color = task_todo_color;
+		done_color = task_done_color;
+	}
+
 	/* Null tasks are never printed */
 	if (tasks.status[i] == TASK_VOID)
 		return;
 
 	printf("#%02d ", i + 1);
 	if (tasks.status[i] == TASK_TODO)
-		printf_color(((color > 0) ? task_todo_color : NULL), 
-		             "%s ", task_todo_str);
+		printf_color(todo_color, "%s ", task_todo_str);
 	else /* TASK_DONE */
-		printf_color(((color > 0) ? task_done_color : NULL), 
-		             "%s ", task_done_str);
+		printf_color(done_color, "%s ", task_done_str);
 
 	printf("%s\n", tasks.tdesc[i]);
 }
@@ -96,14 +104,14 @@ print_short_output(TaskLst tasks)
 }
 
 static void
-print_output(TaskLst tasks, int color)
+print_output(TaskLst tasks)
 {
 	int i;
 
 	printf("Tasks due for: %s\n", ctime(&tasks.expiry));
 
 	for(i = 0; i < TASK_LST_MAX_NUM; ++i)
-		print_task(tasks, i, color);
+		print_task(tasks, i);
 
 	if (i > 0)
 		putchar('\n');
@@ -179,7 +187,7 @@ set_tasks_mode(const char *crasfile)
 }
 
 static void
-output_mode(const char *crasfile, int mode, int color)
+output_mode(const char *crasfile, int mode)
 {
 	TaskLst tasks;
 
@@ -189,13 +197,13 @@ output_mode(const char *crasfile, int mode, int color)
 	if (mode == SHORT_OUTPUT)
 		print_short_output(tasks);
 	else
-		print_output(tasks, color);
+		print_output(tasks);
 
 	putchar('\n');
 }
 
 static void
-mark_tasks_mode(const char *crasfile, const char *id, int value, int color)
+mark_tasks_mode(const char *crasfile, const char *id, int value)
 {
 	int tasknum;
 	char *endptr;
@@ -218,20 +226,14 @@ mark_tasks_mode(const char *crasfile, const char *id, int value, int color)
 
 	write_crasfile(crasfile, tasks);
 
-	print_task(tasks, tasknum - 1, color);
+	print_task(tasks, tasknum - 1);
 }
 
 int
 main(int argc, char *argv[])
 {
 	char numarg[NUMARG_SIZE];
-	int color, mode, task_value;
-
-	/* NO_COLOR support (https://no-color.org/) */
-	if (getenv("NO_COLOR") != NULL)
-		color = 0;
-	else
-		color = 1;
+	int mode, task_value;
 
 	mode = DEF_MODE;
 	ARGBEGIN {
@@ -275,14 +277,15 @@ main(int argc, char *argv[])
 		set_tasks_mode(argv[0]);
 		return 0;
 	case OUT_MODE:
-		output_mode(argv[0], SHORT_OUTPUT, color);
+		output_mode(argv[0], SHORT_OUTPUT);
 		return 0;
 	case MARK_MODE:
-		mark_tasks_mode(argv[0], numarg, task_value, color);
+		mark_tasks_mode(argv[0], numarg, task_value);
 		return 0;
 	}
 	
 	/* Default behavior: long-form output */
-	output_mode(argv[0], LONG_OUTPUT, color);
+	output_mode(argv[0], LONG_OUTPUT);
+
 	return 0;
 }
