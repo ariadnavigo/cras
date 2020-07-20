@@ -41,7 +41,8 @@ static void set_tasks_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode);
 static void mark_tasks_mode(const char *crasfile, const char *id, int value);
 
-static void die(const char *fmt, ...)
+static void
+die(const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
