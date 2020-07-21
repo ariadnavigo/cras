@@ -21,6 +21,7 @@ int tasklst_expired(TaskLst tasks);
 int tasklst_tasks_total(TaskLst tasks);
 int tasklst_tasks_todo(TaskLst tasks);
 int tasklst_tasks_done(TaskLst tasks);
+int tasklst_add_task(TaskLst *tasks, int status, const char *str);
 int tasklst_read_from_file(TaskLst *tasks, FILE *fp);
 void tasklst_write_to_file(FILE *fp, TaskLst tasks);
 

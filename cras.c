@@ -22,7 +22,7 @@ enum {
 
 enum {
 	DEF_MODE,
-	SET_MODE,
+	NEW_MODE,
 	OUT_MODE,
 	MARK_MODE
 };
@@ -32,12 +32,12 @@ static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(TaskLst tasks, int i);
 static void print_short_output(TaskLst tasks);
 static void print_output(TaskLst tasks);
-static void read_crasfile(TaskLst *tasks, const char *crasfile);
+static int read_crasfile(TaskLst *tasks, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst tasks);
-static void read_user_input(TaskLst *tasks, FILE *fp);
+static int store_input(TaskLst *tasks, FILE *fp);
 
 static void usage(void);
-static void set_tasks_mode(const char *crasfile);
+static void new_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode);
 static void mark_tasks_mode(const char *crasfile, const char *id, int value);
 
@@ -121,13 +121,17 @@ print_output(TaskLst tasks)
 	printf(" to do/done/total");
 }
 
-static void
+static int
 read_crasfile(TaskLst *tasks, const char *crasfile)
 {
 	int read_stat;
 	FILE *fp;
 
-	if ((fp = fopen(crasfile, "r")) == NULL)
+	fp = fopen(crasfile, "r");
+	if (errno == ENOENT)
+		return -1; /* We give the chance to create the file later. */
+
+	if (fp == NULL)
 		die("Could not read from %s: %s", crasfile, strerror(errno));
 
 	read_stat = tasklst_read_from_file(tasks, fp);
@@ -139,6 +143,8 @@ read_crasfile(TaskLst *tasks, const char *crasfile)
 	if (tasklst_expired(*tasks) > 0)
 		die("Due date passed (%d tasks overdue).", 
 		    tasklst_tasks_todo(*tasks));
+
+	return 0;
 }
 
 static void
@@ -153,8 +159,8 @@ write_crasfile(const char *crasfile, TaskLst tasks)
 	fclose(fp);
 }
 
-static void
-read_user_input(TaskLst *tasks, FILE *fp)
+static int
+store_input(TaskLst *tasks, FILE *fp)
 {
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 	int i;
@@ -162,29 +168,36 @@ read_user_input(TaskLst *tasks, FILE *fp)
 	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
 		fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp);
 		if (feof(fp) != 0)
-			break;
-		
-		linebuf[strlen(linebuf) - 1] = '\0';
-		strncpy(tasks->tdesc[i], linebuf, TASK_LST_DESC_MAX_SIZE);
-		tasks->status[i] = TASK_TODO;
+			return 0;
+
+		linebuf[strlen(linebuf) - 1] = '\0'; /* Chomp '\n' */
+		if (tasklst_add_task(tasks, TASK_TODO, linebuf) < 0)
+			return -1;
 	}
+
+	return 0;
 }
 
 static void
 usage(void)
 {
-	die("usage: cras [-osv] [-tT num] file");
+	die("usage: cras [-nov] [-tT num] file");
 }
 
 static void
-set_tasks_mode(const char *crasfile)
+new_mode(const char *crasfile)
 {
+	int file_exists;
 	TaskLst tasks;
 
 	tasklst_init(&tasks);
-	read_user_input(&tasks, stdin); /* Only stdin for now */
+	file_exists = read_crasfile(&tasks, crasfile);
+
+	if (store_input(&tasks, stdin) < 0)
+		fprintf(stderr, "Warning: Task file already full.\n");
 	
-	tasklst_set_expiration(&tasks, crasfile_expiry);
+	if (file_exists < 0) /* Only set if this is a new file */
+		tasklst_set_expiration(&tasks, crasfile_expiry);
 	write_crasfile(crasfile, tasks);
 }
 
@@ -239,10 +252,10 @@ main(int argc, char *argv[])
 
 	mode = DEF_MODE;
 	ARGBEGIN {
-	case 's':
+	case 'n':
 		if (mode != DEF_MODE)
 			usage();
-		mode = SET_MODE;
+		mode = NEW_MODE;
 		break;
 	case 'o':
 		if (mode != DEF_MODE)
@@ -275,8 +288,8 @@ main(int argc, char *argv[])
 		usage();
 
 	switch (mode) {
-	case SET_MODE:
-		set_tasks_mode(argv[0]);
+	case NEW_MODE:
+		new_mode(argv[0]);
 		return 0;
 	case OUT_MODE:
 		output_mode(argv[0], SHORT_OUTPUT);

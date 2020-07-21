@@ -65,7 +65,23 @@ tasklst_tasks_done(TaskLst tasks)
 {
 	return tasklst_tasks_status(tasks, TASK_DONE);
 }
-		
+
+int
+tasklst_add_task(TaskLst *tasks, int status, const char *str)
+{
+	int i;
+
+	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
+		if (tasks->status[i] == TASK_VOID) {
+			strncpy(tasks->tdesc[i], str, TASK_LST_DESC_MAX_SIZE);
+			tasks->status[i] = status;
+			return i;
+		}
+	}
+
+	return -1; /* We couldn't add any new task, because tasks is full */
+} 
+
 int
 tasklst_read_from_file(TaskLst *tasks, FILE *fp)
 {
@@ -88,16 +104,11 @@ tasklst_read_from_file(TaskLst *tasks, FILE *fp)
 		if (endptr[0] != '\0')
 			return -1;
 
-		if (stat_buf == TASK_VOID)
-			break;
-		else
-			tasks->status[i] = stat_buf;
-
 		ptr = strtok(NULL, "\n");
 		if (ptr == NULL)
 			return -1;
 
-		strncpy(tasks->tdesc[i], ptr, TASK_LST_DESC_MAX_SIZE);
+		tasklst_add_task(tasks, stat_buf, ptr);
 	}
 
 	return 0;

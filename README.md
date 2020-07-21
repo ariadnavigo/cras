@@ -35,9 +35,10 @@ Tasks due for: Sat Jun 20 15:57:28 2020
 3/0/3 to do/done/total
 ```
 
-To set a task list, pass the -s option and the name of the file that will hold
+To set a task list, pass the -n option and the name of the file that will hold
  the list. The tasks will be read from standard input, each line being a new 
-task. Cras stops reading when it reaches EOF.
+task. Cras stops reading when it reaches EOF. The same -n flag allows for 
+adding new tasks if the file already exists.
 
 The -t and -T, followed by the task number, mark the task as done or pending, 
 respectively.

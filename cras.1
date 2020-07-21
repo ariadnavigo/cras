@@ -5,7 +5,7 @@ Cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-osv ]
+.RB [ \-nov ]
 .RB [ \-tT 
 .IR num  ]
 .I file
@@ -17,12 +17,13 @@ default) and doesn't allow you to edit the task list after set up, except for
 marking a task as done.
 .SH OPTIONS
 .TP
+.B \-n
+Add new tasks to
+.I file,
+creating it if it doesn't exist.
+.TP
 .B \-o
 Switch to short-form output.
-.TP
-.B \-s
-Save from standard input into 
-.I file.
 .TP
 .BI \-t " num"
 Mark task 
@@ -38,8 +39,9 @@ as pending.
 Show version information and exit.
 .SH USAGE
 .PP
-To set up a new task list, call Cras using the -s option. Cras will read each 
-new line from standard input as a new task, until EOF is reached.
+To set up a new task list, call Cras using the -n option. Cras will read each 
+new line from standard input as a new task, until EOF is reached. Add new tasks
+to an already existing file using -n as well.
 .PP
 The newly created task list will be readable by Cras only up to the expiry
 date, which under the default configuration is 24 hours after originally saving
