@@ -109,7 +109,7 @@ print_output(TaskLst tasks)
 {
 	int i;
 
-	printf("Tasks due for: %s\n", ctime(&tasks.expiry));
+	printf("Due date: %s\n", ctime(&tasks.expiry));
 
 	for(i = 0; i < TASK_LST_MAX_NUM; ++i)
 		print_task(tasks, i);
@@ -137,7 +137,8 @@ read_crasfile(TaskLst *tasks, const char *crasfile)
 		die("Parsing error: task file corrupted.");
 
 	if (tasklst_expired(*tasks) > 0)
-		die("Current task file expired: Set a new one!");
+		die("Due date passed (%d tasks overdue).", 
+		    tasklst_tasks_todo(*tasks));
 }
 
 static void
