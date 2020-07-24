@@ -89,7 +89,7 @@ tasklst_read_from_file(TaskLst *tasks, FILE *fp)
 	char *ptr, *endptr;
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 	
-	if (fscanf(fp, "%" SCNd64 "\n", &tasks->expiry) == 0)
+	if (fscanf(fp, "%" SCNd64 "\n", &tasks->expiry) <= 0)
 		return -1;
 
 	for (i = 0; i < TASK_LST_MAX_NUM && feof(fp) == 0; ++i) {
