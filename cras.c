@@ -29,17 +29,17 @@ enum {
 
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
-static void print_task(TaskLst tasks, int i);
-static void print_short_output(TaskLst tasks);
-static void print_output(TaskLst tasks);
-static int read_crasfile(TaskLst *tasks, const char *crasfile);
-static void write_crasfile(const char *crasfile, TaskLst tasks);
-static int store_input(TaskLst *tasks, FILE *fp);
+static void print_task(Task task, int i);
+static void print_short_output(TaskLst list);
+static void print_output(TaskLst list);
+static int read_crasfile(TaskLst *list, const char *crasfile);
+static void write_crasfile(const char *crasfile, TaskLst list);
+static int store_input(TaskLst *list, FILE *fp);
 
 static void usage(void);
 static void new_mode(const char *crasfile);
 static void output_mode(const char *crasfile, int mode);
-static void mark_tasks_mode(const char *crasfile, const char *id, int value);
+static void mark_list_mode(const char *crasfile, const char *id, int value);
 
 static void
 die(const char *fmt, ...)
@@ -70,7 +70,7 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 }
 
 static void
-print_task(TaskLst tasks, int i)
+print_task(Task task, int i)
 {
 	const char *todo_color, *done_color;
 
@@ -83,46 +83,45 @@ print_task(TaskLst tasks, int i)
 		done_color = task_done_color;
 	}
 
-	/* Null tasks are never printed */
-	if (tasks.status[i] == TASK_VOID)
-		return;
-
 	printf("#%02d ", i + 1);
-	if (tasks.status[i] == TASK_TODO)
+	if (task.status == TASK_TODO)
 		printf_color(todo_color, "%s ", task_todo_str);
 	else /* TASK_DONE */
 		printf_color(done_color, "%s ", task_done_str);
 
-	printf("%s\n", tasks.tdesc[i]);
+	printf("%s\n", task.tdesc);
 }
 
 
 static void
-print_short_output(TaskLst tasks)
+print_short_output(TaskLst list)
 {
-	printf("%d/%d/%d", tasklst_tasks_todo(tasks),
-	       tasklst_tasks_done(tasks), tasklst_tasks_total(tasks));
+	printf("%d/%d/%d", task_lst_count_todo(list),
+	       task_lst_count_done(list), task_lst_get_size(list));
 }
 
 static void
-print_output(TaskLst tasks)
+print_output(TaskLst list)
 {
 	int i;
+	Task *ptr;
 
-	printf("Due date: %s\n", ctime(&tasks.expiry));
+	printf("Due date: %s\n", ctime(&list.expiry));
 
-	for(i = 0; i < TASK_LST_MAX_NUM; ++i)
-		print_task(tasks, i);
+	for(i = 0, ptr = list.first; ptr != NULL; ptr = ptr->next) {
+		print_task(*ptr, i);
+		++i;
+	}
 
 	if (i > 0)
 		putchar('\n');
 
-	print_short_output(tasks);
+	print_short_output(list);
 	printf(" to do/done/total");
 }
 
 static int
-read_crasfile(TaskLst *tasks, const char *crasfile)
+read_crasfile(TaskLst *list, const char *crasfile)
 {
 	int read_stat;
 	FILE *fp;
@@ -131,47 +130,52 @@ read_crasfile(TaskLst *tasks, const char *crasfile)
 	if (errno == ENOENT)
 		return -1; /* We give the chance to create the file later. */
 
-	if (fp == NULL)
+	if (fp == NULL) {
+		task_lst_cleanup(list);
 		die("Could not read from %s: %s", crasfile, strerror(errno));
+	}
 
-	read_stat = tasklst_read_from_file(tasks, fp);
+	read_stat = task_lst_read_from_file(list, fp);
 	fclose(fp);
 
-	if (read_stat < 0)
+	if (read_stat < 0) {
+		task_lst_cleanup(list);
 		die("Parsing error: task file corrupted.");
+	}
 
-	if (tasklst_expired(*tasks) > 0)
-		die("Due date passed (%d tasks overdue).", 
-		    tasklst_tasks_todo(*tasks));
+	if (task_lst_expired(*list) > 0) {
+		task_lst_cleanup(list);
+		die("Due date passed (%d list overdue).", 
+		    task_lst_count_todo(*list));
+	}
 
 	return 0;
 }
 
 static void
-write_crasfile(const char *crasfile, TaskLst tasks)
+write_crasfile(const char *crasfile, TaskLst list)
 {
 	FILE *fp;
 
-	if ((fp = fopen(crasfile, "w")) == NULL)
+	if ((fp = fopen(crasfile, "w")) == NULL) {
+		task_lst_cleanup(&list);
 		die("Could not write to %s: %s", crasfile, strerror(errno));
+	}
 
-	tasklst_write_to_file(fp, tasks);
+	task_lst_write_to_file(fp, list);
 	fclose(fp);
 }
 
 static int
-store_input(TaskLst *tasks, FILE *fp)
+store_input(TaskLst *list, FILE *fp)
 {
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
-	int i;
-	
-	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
+
+	while (feof(fp) == 0) {
 		fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp);
-		if (feof(fp) != 0)
-			return 0;
 
 		linebuf[strlen(linebuf) - 1] = '\0'; /* Chomp '\n' */
-		if (tasklst_add_task(tasks, TASK_TODO, linebuf) < 0)
+		if (task_lst_add_task(list, TASK_TODO, linebuf) < 0)
 			return -1;
 	}
 
@@ -188,60 +192,73 @@ static void
 new_mode(const char *crasfile)
 {
 	int file_exists;
-	TaskLst tasks;
+	TaskLst list;
 
-	tasklst_init(&tasks);
-	file_exists = read_crasfile(&tasks, crasfile);
+	task_lst_init(&list);
+	file_exists = read_crasfile(&list, crasfile);
 
-	if (store_input(&tasks, stdin) < 0)
+	if (store_input(&list, stdin) < 0)
 		fprintf(stderr, "Warning: Task file already full.\n");
 	
 	if (file_exists < 0) /* Only set if this is a new file */
-		tasklst_set_expiration(&tasks, crasfile_expiry);
-	write_crasfile(crasfile, tasks);
+		task_lst_set_expiration(&list, crasfile_expiry);
+	write_crasfile(crasfile, list);
+
+	task_lst_cleanup(&list);
 }
 
 static void
 output_mode(const char *crasfile, int mode)
 {
-	TaskLst tasks;
+	TaskLst list;
 
-	tasklst_init(&tasks);
-	read_crasfile(&tasks, crasfile);
+	task_lst_init(&list);
+	read_crasfile(&list, crasfile);
 
 	if (mode == SHORT_OUTPUT)
-		print_short_output(tasks);
+		print_short_output(list);
 	else
-		print_output(tasks);
+		print_output(list);
 
 	putchar('\n');
+
+	task_lst_cleanup(&list);
 }
 
 static void
-mark_tasks_mode(const char *crasfile, const char *id, int value)
+mark_list_mode(const char *crasfile, const char *id, int value)
 {
 	int tasknum;
 	char *endptr;
-	TaskLst tasks;
+	TaskLst list;
+	Task *task;
 
 	tasknum = strtol(id, &endptr, 10);
 	if (endptr[0] != '\0')
 		die("'%s' not a number.", id);
 
-	tasklst_init(&tasks);
-	read_crasfile(&tasks, crasfile);
+	task_lst_init(&list);
+	read_crasfile(&list, crasfile);
 
-	if (tasknum <= 0)
+	if (tasknum <= 0) {
+		task_lst_cleanup(&list);
 		die("Task number must be greater than zero.");
+	}
 
-	if (tasknum <= tasklst_tasks_total(tasks))
-		tasks.status[tasknum - 1] = value;
-	else
+	if (tasknum <= task_lst_get_size(list))
+		task = task_lst_get_task(list, tasknum - 1);
+	
+	if (task == NULL) {
+		task_lst_cleanup(&list);
 		die("Task #%d does not exist.", tasknum);
+	}
 
-	write_crasfile(crasfile, tasks);
+	task->status = value;
+	write_crasfile(crasfile, list);
 
-	print_task(tasks, tasknum - 1);
+	print_task(*task, tasknum - 1);
+
+	task_lst_cleanup(&list);
 }
 
 int
@@ -295,7 +312,7 @@ main(int argc, char *argv[])
 		output_mode(argv[0], SHORT_OUTPUT);
 		return 0;
 	case MARK_MODE:
-		mark_tasks_mode(argv[0], numarg, task_value);
+		mark_list_mode(argv[0], numarg, task_value);
 		return 0;
 	}
 	

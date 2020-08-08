@@ -8,91 +8,144 @@
 
 #include "tasklst.h"
 
-static int tasklst_tasks_status(TaskLst tasks, int status);
+static int task_lst_count_status(TaskLst list, int status);
+static Task *task_lst_get_last_task(TaskLst list);
 
 static int
-tasklst_tasks_status(TaskLst tasks, int status)
+task_lst_count_status(TaskLst list, int status)
 {
-	int i, total;
+	int total;
+	Task *ptr;
 	
-	for (i = 0, total = 0; i < TASK_LST_MAX_NUM; ++i) {
-		if (tasks.status[i] == status)
+	for (ptr = list.first, total = 0; ptr != NULL; ptr = ptr->next) {
+		if (ptr->status == status)
 			++total;
 	}
 
 	return total;
 }
 
-void
-tasklst_init(TaskLst *tasks)
+static Task *
+task_lst_get_last_task(TaskLst list)
 {
-	int i;
+	Task *ptr, *next;
 
-	tasks->expiry = 0;
+	ptr = list.first;
+	while (ptr != NULL) {
+		next = ptr->next;
+		if (next == NULL)
+			return ptr;
 
-	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
-		memset(&tasks->status[i], TASK_VOID, sizeof(int));
-		memset(tasks->tdesc[i], 0, TASK_LST_DESC_MAX_SIZE);
+		ptr = next;
+	}
+
+	return ptr;
+}
+
+void
+task_lst_init(TaskLst *list)
+{
+	list->expiry = 0;
+	list->first = NULL;
+}
+
+void
+task_lst_cleanup(TaskLst *list)
+{
+	Task *ptr, *next;
+	
+	ptr = list->first;
+	while (ptr != NULL) {
+		next = ptr->next;
+		free(ptr);
+		ptr = next;
 	}
 }
 
+int
+task_lst_get_size(TaskLst list)
+{
+	Task *ptr;
+	int count;
+
+	for (count = 0, ptr = list.first; ptr != NULL; ptr = ptr->next)
+		++count;
+
+	return count;
+}
+
 void
-tasklst_set_expiration(TaskLst *tasks, int64_t delta)
+task_lst_set_expiration(TaskLst *list, int64_t delta)
 {
-	tasks->expiry = time(NULL) + delta;
+	list->expiry = time(NULL) + delta;
 }
 
 int
-tasklst_expired(TaskLst tasks)
+task_lst_expired(TaskLst list)
 {
-	return (time(NULL) > tasks.expiry) ? 1 : 0;
+	return (time(NULL) > list.expiry) ? 1 : 0;
 }
 
 int
-tasklst_tasks_total(TaskLst tasks)
+task_lst_count_todo(TaskLst list)
 {
-	return tasklst_tasks_todo(tasks) + tasklst_tasks_done(tasks);
+	return task_lst_count_status(list, TASK_TODO);
 }
 
 int
-tasklst_tasks_todo(TaskLst tasks)
+task_lst_count_done(TaskLst list)
 {
-	return tasklst_tasks_status(tasks, TASK_TODO);
+	return task_lst_count_status(list, TASK_DONE);
 }
 
 int
-tasklst_tasks_done(TaskLst tasks)
+task_lst_add_task(TaskLst *list, int status, const char *str)
 {
-	return tasklst_tasks_status(tasks, TASK_DONE);
-}
+	Task *last, *newtask;
 
-int
-tasklst_add_task(TaskLst *tasks, int status, const char *str)
-{
-	int i;
+	newtask = malloc(sizeof(Task));
+	if (newtask == NULL)
+		return -1;
 
-	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
-		if (tasks->status[i] == TASK_VOID) {
-			strncpy(tasks->tdesc[i], str, TASK_LST_DESC_MAX_SIZE);
-			tasks->status[i] = status;
-			return i;
-		}
-	}
+	newtask->status = status;
+	newtask->next = NULL;
+	strncpy(newtask->tdesc, str, TASK_LST_DESC_MAX_SIZE);
 
-	return -1; /* We couldn't add any new task, because tasks is full */
+	last = task_lst_get_last_task(*list);
+	if (last == NULL)
+		list->first = newtask;
+	else
+		last->next = newtask;
+
+	return 0;
 } 
 
-int
-tasklst_read_from_file(TaskLst *tasks, FILE *fp)
+Task *
+task_lst_get_task(TaskLst list, int i)
 {
-	int i, stat_buf;
+	Task *ptr;
+	
+	for (ptr = list.first; i > 0; ptr = ptr->next) {
+		if (ptr == NULL) /* We're out of bounds */
+			return NULL;
+
+		--i;
+	}
+
+	return ptr;
+}
+
+int
+task_lst_read_from_file(TaskLst *list, FILE *fp)
+{
+	int stat_buf;
 	char *ptr, *endptr;
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 	
-	if (fscanf(fp, "%" SCNd64 "\n", &tasks->expiry) <= 0)
+	if (fscanf(fp, "%" SCNd64 "\n", &list->expiry) <= 0)
 		return -1;
 
-	for (i = 0; i < TASK_LST_MAX_NUM && feof(fp) == 0; ++i) {
+	while (feof(fp) == 0) {
 		if (fgets(linebuf, sizeof(linebuf), fp) == NULL)
 			break;
 
@@ -108,23 +161,19 @@ tasklst_read_from_file(TaskLst *tasks, FILE *fp)
 		if (ptr == NULL)
 			return -1;
 
-		tasklst_add_task(tasks, stat_buf, ptr);
+		task_lst_add_task(list, stat_buf, ptr);
 	}
 
 	return 0;
 }
 
 void
-tasklst_write_to_file(FILE *fp, TaskLst tasks)
+task_lst_write_to_file(FILE *fp, TaskLst list)
 {
-	int i;
+	Task *ptr;
 
-	fprintf(fp, "%" PRId64 "\n", tasks.expiry);
+	fprintf(fp, "%" PRId64 "\n", list.expiry);
 
-	for (i = 0; i < TASK_LST_MAX_NUM; ++i) {
-		if (tasks.status[i] == TASK_VOID)
-			break;
-
-		fprintf(fp, "%d\t%s\n", tasks.status[i], tasks.tdesc[i]);
-	}
+	for (ptr = list.first; ptr != NULL; ptr = ptr->next)
+		fprintf(fp, "%d\t%s\n", ptr->status, ptr->tdesc);
 }
