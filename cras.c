@@ -93,7 +93,6 @@ print_task(Task task, int i)
 	printf("%s\n", task.tdesc);
 }
 
-
 static void
 print_short_output(TaskLst list)
 {
@@ -176,7 +175,10 @@ store_input(TaskLst *list, FILE *fp)
 		if (fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp) == NULL)
 			break;
 
-		linebuf[strlen(linebuf) - 1] = '\0'; /* Chomp '\n' */
+		/* Chomp '\n' */
+		if (linebuf[strlen(linebuf) - 1] == '\n')
+			linebuf[strlen(linebuf) - 1] = '\0';
+
 		if (task_lst_add_task(list, TASK_TODO, linebuf) < 0)
 			return -1;
 	}
