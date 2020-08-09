@@ -253,9 +253,11 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 		die("Task number must be greater than zero.");
 	}
 
+	task = NULL;
 	if (tasknum <= task_lst_get_size(list))
 		task = task_lst_get_task(list, tasknum - 1);
 	
+	/* If task is still NULL, then it means tasknum wasn't within range. */
 	if (task == NULL) {
 		task_lst_cleanup(&list);
 		die("Task #%d does not exist.", tasknum);
