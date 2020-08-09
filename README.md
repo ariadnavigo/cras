@@ -37,11 +37,13 @@ Tasks due for: Sat Jun 20 15:57:28 2020
 
 To set a task list, pass the -n option and the name of the file that will hold
  the list. The tasks will be read from standard input, each line being a new 
-task. Cras stops reading when it reaches EOF. The same -n flag allows for 
-adding new tasks if the file already exists.
-
+task. Cras stops reading when it reaches EOF.
+ 
 The -t and -T, followed by the task number, mark the task as done or pending, 
 respectively.
+
+Adding new tasks to an already existing file is possible by using the -a 
+option.
 
 For further usage information, please refer to the cras(1) manual page.
 

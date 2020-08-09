@@ -5,7 +5,7 @@ Cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-nov ]
+.RB [ \-anov ]
 .RB [ \-tT 
 .IR num  ]
 .I file
@@ -17,10 +17,15 @@ default) and doesn't allow you to edit the task list after set up, except for
 marking a task as done.
 .SH OPTIONS
 .TP
+.B \-a
+Append new tasks to
+.I file.
+(Be aware that this doesn't update the expiration date.)
+.TP
 .B \-n
-Add new tasks to
+Create new
 .I file,
-creating it if it doesn't exist.
+overwriting previous contents if it already exists.
 .TP
 .B \-o
 Switch to short-form output.

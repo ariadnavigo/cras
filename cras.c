@@ -22,6 +22,7 @@ enum {
 
 enum {
 	DEF_MODE,
+	APP_MODE,
 	NEW_MODE,
 	OUT_MODE,
 	MARK_MODE
@@ -37,7 +38,7 @@ static void write_crasfile(const char *crasfile, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
 
 static void usage(void);
-static void new_mode(const char *crasfile);
+static void input_mode(const char *crasfile, int append);
 static void output_mode(const char *crasfile, int mode);
 static void mark_list_mode(const char *crasfile, const char *id, int value);
 
@@ -172,7 +173,8 @@ store_input(TaskLst *list, FILE *fp)
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 
 	while (feof(fp) == 0) {
-		fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp);
+		if (fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp) == NULL)
+			break;
 
 		linebuf[strlen(linebuf) - 1] = '\0'; /* Chomp '\n' */
 		if (task_lst_add_task(list, TASK_TODO, linebuf) < 0)
@@ -185,23 +187,27 @@ store_input(TaskLst *list, FILE *fp)
 static void
 usage(void)
 {
-	die("usage: cras [-nov] [-tT num] file");
+	die("usage: cras [-anov] [-tT num] file");
 }
 
 static void
-new_mode(const char *crasfile)
+input_mode(const char *crasfile, int append)
 {
-	int file_exists;
 	TaskLst list;
 
 	task_lst_init(&list);
-	file_exists = read_crasfile(&list, crasfile);
+	if (append > 0)
+		read_crasfile(&list, crasfile);
 
-	if (store_input(&list, stdin) < 0)
-		fprintf(stderr, "Warning: Task file already full.\n");
-	
-	if (file_exists < 0) /* Only set if this is a new file */
+	if (store_input(&list, stdin) < 0) {
+		task_lst_cleanup(&list);
+		die("Internal memory error.");
+	}
+
+	/* Only set a new expiration date if creating a new file */
+	if (append == 0)
 		task_lst_set_expiration(&list, crasfile_expiry);
+
 	write_crasfile(crasfile, list);
 
 	task_lst_cleanup(&list);
@@ -269,6 +275,11 @@ main(int argc, char *argv[])
 
 	mode = DEF_MODE;
 	ARGBEGIN {
+	case 'a':
+		if (mode != DEF_MODE)
+			usage();
+		mode = APP_MODE;
+		break;
 	case 'n':
 		if (mode != DEF_MODE)
 			usage();
@@ -305,8 +316,11 @@ main(int argc, char *argv[])
 		usage();
 
 	switch (mode) {
+	case APP_MODE:
+		input_mode(argv[0], 1);
+		return 0;
 	case NEW_MODE:
-		new_mode(argv[0]);
+		input_mode(argv[0], 0);
 		return 0;
 	case OUT_MODE:
 		output_mode(argv[0], SHORT_OUTPUT);
