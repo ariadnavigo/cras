@@ -60,35 +60,31 @@ static void
 printf_color(const char *ansi_color, const char *fmt, ...)
 {
 	va_list ap;
+	const char *eff_color; /* "Effective color" */
+
+	/* NO_COLOR support (https://no-color.org/) */
+	if (getenv("NO_COLOR") != NULL) {
+		eff_color = NULL;
+	} else {
+		eff_color = ansi_color;
+	}
+
+	printf("%s", (eff_color != NULL) ? eff_color : "");
 	va_start(ap, fmt);
-
-	printf("%s", (ansi_color != NULL) ? ansi_color : "");
-
 	vprintf(fmt, ap);
 	va_end(ap);
 
-	printf("%s", (ansi_color != NULL) ? "\033[0m" : "");
+	printf("%s", (eff_color != NULL) ? "\033[0m" : "");
 }
 
 static void
 print_task(Task task, int i)
 {
-	const char *todo_color, *done_color;
-
-	/* NO_COLOR support (https://no-color.org/) */
-	if (getenv("NO_COLOR") != NULL) {
-		todo_color = NULL;
-		done_color = NULL;
-	} else {
-		todo_color = task_todo_color;
-		done_color = task_done_color;
-	}
-
 	printf("#%02d ", i + 1);
 	if (task.status == TASK_TODO)
-		printf_color(todo_color, "%s ", task_todo_str);
+		printf_color(task_todo_color, "%s ", task_todo_str);
 	else /* TASK_DONE */
-		printf_color(done_color, "%s ", task_done_str);
+		printf_color(task_done_color, "%s ", task_done_str);
 
 	printf("%s\n", task.tdesc);
 }
@@ -96,8 +92,9 @@ print_task(Task task, int i)
 static void
 print_short_output(TaskLst list)
 {
-	printf("%d/%d/%d", task_lst_count_todo(list),
-	       task_lst_count_done(list), task_lst_get_size(list));
+	printf_color(task_todo_color, "%d", task_lst_count_todo(list));
+	printf("/");
+	printf_color(task_done_color, "%d", task_lst_count_done(list));
 }
 
 static void
@@ -117,7 +114,7 @@ print_output(TaskLst list)
 		putchar('\n');
 
 	print_short_output(list);
-	printf(" to do/done/total");
+	printf(" to do/done");
 }
 
 static int
