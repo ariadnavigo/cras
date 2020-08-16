@@ -218,7 +218,10 @@ output_mode(const char *crasfile, int mode)
 	TaskLst list;
 
 	task_lst_init(&list);
-	read_crasfile(&list, crasfile);
+	if (read_crasfile(&list, crasfile) < 0) {
+		task_lst_cleanup(&list);
+		die("Could not find file %s", crasfile);
+	}
 
 	if (mode == SHORT_OUTPUT)
 		print_short_output(list);
