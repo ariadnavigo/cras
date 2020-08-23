@@ -142,8 +142,7 @@ read_crasfile(TaskLst *list, const char *crasfile)
 
 	if (task_lst_expired(*list) > 0) {
 		task_lst_cleanup(list);
-		die("Due date passed (%d list overdue).", 
-		    task_lst_count_todo(*list));
+		die("Due date passed."); 
 	}
 
 	return 0;
