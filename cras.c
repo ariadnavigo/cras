@@ -25,6 +25,7 @@ enum {
 	APP_MODE,
 	NEW_MODE,
 	OUT_MODE,
+	DLT_MODE,
 	MARK_MODE
 };
 
@@ -40,6 +41,7 @@ static int store_input(TaskLst *list, FILE *fp);
 static void usage(void);
 static void input_mode(const char *crasfile, int append);
 static void output_mode(const char *crasfile, int mode);
+static void delete_mode(const char *crasfile, const char *id);
 static void mark_list_mode(const char *crasfile, const char *id, int value);
 
 static void
@@ -185,7 +187,7 @@ store_input(TaskLst *list, FILE *fp)
 static void
 usage(void)
 {
-	die("usage: cras [-anov] [-tT num] file");
+	die("usage: cras [-anov] [-dtT num] file");
 }
 
 static void
@@ -228,6 +230,26 @@ output_mode(const char *crasfile, int mode)
 		print_output(list);
 
 	putchar('\n');
+
+	task_lst_cleanup(&list);
+}
+
+static void
+delete_mode(const char *crasfile, const char *id)
+{
+	int tasknum;
+	char *endptr;
+	TaskLst list;
+
+	tasknum = strtol(id, &endptr, 10);
+	if (endptr[0] != '\0')
+		die("'%s' not a number.", id);
+
+	task_lst_init(&list);
+	read_crasfile(&list, crasfile);
+
+	task_lst_del_task(&list, tasknum - 1);
+	write_crasfile(crasfile, list);
 
 	task_lst_cleanup(&list);
 }
@@ -297,6 +319,12 @@ main(int argc, char *argv[])
 		die("Cras %s. See LICENSE file for copyright and license "
 		    "details.", VERSION);
 		break;
+	case 'd':
+		if (mode != DEF_MODE)
+			usage();
+		mode = DLT_MODE;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
 	case 't':
 		if (mode != DEF_MODE)
 			usage();
@@ -327,6 +355,9 @@ main(int argc, char *argv[])
 		return 0;
 	case OUT_MODE:
 		output_mode(argv[0], SHORT_OUTPUT);
+		return 0;
+	case DLT_MODE:
+		delete_mode(argv[0], numarg);
 		return 0;
 	case MARK_MODE:
 		mark_list_mode(argv[0], numarg, task_value);

@@ -159,6 +159,9 @@ task_lst_del_task(TaskLst *list, int i)
 	if (next != NULL)
 		next->prev = prev;
 
+	if (list->first == del)
+		list->first = next;
+
 	free(del);
 
 	return 0;
