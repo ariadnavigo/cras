@@ -98,6 +98,23 @@ task_lst_count_done(TaskLst list)
 	return task_lst_count_status(list, TASK_DONE);
 }
 
+Task *
+task_lst_get_task(TaskLst list, int i)
+{
+	/* TODO: Maybe binary search? */
+
+	Task *ptr;
+	
+	for (ptr = list.first; i > 0; ptr = ptr->next) {
+		if (ptr == NULL) /* We're out of bounds */
+			return NULL;
+
+		--i;
+	}
+
+	return ptr;
+}
+
 int
 task_lst_add_task(TaskLst *list, int status, const char *str)
 {
@@ -145,23 +162,6 @@ task_lst_del_task(TaskLst *list, int i)
 	free(del);
 
 	return 0;
-}
-
-Task *
-task_lst_get_task(TaskLst list, int i) /* TODO: mv above task_lst_add_task() */
-{
-	/* TODO: Maybe binary search? */
-
-	Task *ptr;
-	
-	for (ptr = list.first; i > 0; ptr = ptr->next) {
-		if (ptr == NULL) /* We're out of bounds */
-			return NULL;
-
-		--i;
-	}
-
-	return ptr;
 }
 
 int
