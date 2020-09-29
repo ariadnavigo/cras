@@ -10,6 +10,7 @@ enum {
 typedef struct TASK_ Task;
 struct TASK_ {
 	int status;
+	Task *prev;
 	Task *next;
 	char tdesc[TASK_LST_DESC_MAX_SIZE];
 };
@@ -28,6 +29,7 @@ int task_lst_count_todo(TaskLst list);
 int task_lst_count_done(TaskLst list);
 Task *task_lst_get_task(TaskLst list, int i);
 int task_lst_add_task(TaskLst *list, int status, const char *str);
+int task_lst_del_task(TaskLst *list, int i);
 int task_lst_read_from_file(TaskLst *list, FILE *fp);
 void task_lst_write_to_file(FILE *fp, TaskLst list);
 

@@ -108,7 +108,6 @@ task_lst_add_task(TaskLst *list, int status, const char *str)
 		return -1;
 
 	newtask->status = status;
-	newtask->next = NULL;
 	strncpy(newtask->tdesc, str, TASK_LST_DESC_MAX_SIZE);
 
 	last = task_lst_get_last_task(*list);
@@ -117,12 +116,42 @@ task_lst_add_task(TaskLst *list, int status, const char *str)
 	else
 		last->next = newtask;
 
+	newtask->prev = last; /* Also if last == NULL */
+	newtask->next = NULL;
+
 	return 0;
 } 
 
-Task *
-task_lst_get_task(TaskLst list, int i)
+int
+task_lst_del_task(TaskLst *list, int i)
 {
+	Task *del, *prev, *next;
+
+	if ((i > task_lst_get_size(*list)) || (i < 0))
+		return -1;
+
+	if ((del = task_lst_get_task(*list, i)) == NULL)
+		return -1;
+
+	prev = del->prev;
+	next = del->next;
+
+	if (prev != NULL)
+		prev->next = next;
+
+	if (next != NULL)
+		next->prev = prev;
+
+	free(del);
+
+	return 0;
+}
+
+Task *
+task_lst_get_task(TaskLst list, int i) /* TODO: mv above task_lst_add_task() */
+{
+	/* TODO: Maybe binary search? */
+
 	Task *ptr;
 	
 	for (ptr = list.first; i > 0; ptr = ptr->next) {
