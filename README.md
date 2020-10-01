@@ -43,7 +43,7 @@ The -t and -T, followed by the task number, mark the task as done or pending,
 respectively.
 
 Adding new tasks to an already existing file is possible by using the -a 
-option.
+option. Deleting tasks is performed by using the -d option.
 
 For further usage information, please refer to the cras(1) manual page.
 

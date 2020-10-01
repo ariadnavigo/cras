@@ -6,7 +6,7 @@ Cras - The Anti-Procrastination Tool
 .PP
 .B cras
 .RB [ \-anov ]
-.RB [ \-tT 
+.RB [ \-dtT 
 .IR num  ]
 .I file
 .SH DESCRIPTION
@@ -30,6 +30,11 @@ overwriting previous contents if it already exists.
 .B \-o
 Switch to short-form output.
 .TP
+.BI \-d " num"
+Delete task
+.I
+num.
+.TP
 .BI \-t " num"
 Mark task 
 .I num 
@@ -51,6 +56,8 @@ to an already existing file using -n as well.
 The newly created task list will be readable by Cras only up to the expiry
 date, which under the default configuration is 24 hours after originally saving
 it. Use -t to mark a task as done and -T to mark it back as pending.
+.PP
+You may delete tasks by using the -d option followed by its identifying number.
 .PP
 Running Cras with no options outputs the task list. For a summary, use the -o
 flag; this short-form output is suitable for printing to WM status bars.
