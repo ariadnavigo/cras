@@ -22,7 +22,6 @@ typedef struct {
 
 void task_lst_init(TaskLst *list);
 void task_lst_cleanup(TaskLst *list);
-int task_lst_get_size(TaskLst list);
 void task_lst_set_expiration(TaskLst *list, int64_t delta);
 int task_lst_expired(TaskLst list);
 int task_lst_count_todo(TaskLst list);

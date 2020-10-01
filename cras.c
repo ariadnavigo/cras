@@ -244,11 +244,16 @@ delete_mode(const char *crasfile, const char *id)
 	tasknum = strtol(id, &endptr, 10);
 	if (endptr[0] != '\0')
 		die("'%s' not a number.", id);
+	if (tasknum <= 0)
+		die("Task number must be greater than zero.");
 
 	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
-	task_lst_del_task(&list, tasknum - 1);
+	if (task_lst_del_task(&list, tasknum - 1) < 0) {
+		task_lst_cleanup(&list);
+		die("Task #%d does not exist.", tasknum);
+	}
 	write_crasfile(crasfile, list);
 
 	task_lst_cleanup(&list);
@@ -265,20 +270,13 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 	tasknum = strtol(id, &endptr, 10);
 	if (endptr[0] != '\0')
 		die("'%s' not a number.", id);
+	if (tasknum <= 0)
+		die("Task number must be greater than zero.");
 
 	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
-	if (tasknum <= 0) {
-		task_lst_cleanup(&list);
-		die("Task number must be greater than zero.");
-	}
-
-	task = NULL;
-	if (tasknum <= task_lst_get_size(list))
-		task = task_lst_get_task(list, tasknum - 1);
-	
-	/* If task is still NULL, then it means tasknum wasn't within range. */
+	task = task_lst_get_task(list, tasknum - 1);
 	if (task == NULL) {
 		task_lst_cleanup(&list);
 		die("Task #%d does not exist.", tasknum);

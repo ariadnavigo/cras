@@ -62,18 +62,6 @@ task_lst_cleanup(TaskLst *list)
 	}
 }
 
-int
-task_lst_get_size(TaskLst list)
-{
-	Task *ptr;
-	int count;
-
-	for (count = 0, ptr = list.first; ptr != NULL; ptr = ptr->next)
-		++count;
-
-	return count;
-}
-
 void
 task_lst_set_expiration(TaskLst *list, int64_t delta)
 {
@@ -143,9 +131,6 @@ int
 task_lst_del_task(TaskLst *list, int i)
 {
 	Task *del, *prev, *next;
-
-	if ((i > task_lst_get_size(*list)) || (i < 0))
-		return -1;
 
 	if ((del = task_lst_get_task(*list, i)) == NULL)
 		return -1;
