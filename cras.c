@@ -13,7 +13,8 @@ static char *argv0; /* Required here by arg.h */
 #include "config.h"
 #include "tasklst.h"
 
-#define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -t/-T */
+#define TASK_NONEXIST_MSG "Task #%d does not exist."
+#define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -d/-t/-T */
 
 enum {
 	SHORT_OUTPUT,
@@ -37,6 +38,7 @@ static void print_output(TaskLst list);
 static int read_crasfile(TaskLst *list, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
+static int parse_tasknum(const char *id);
 
 static void usage(void);
 static void input_mode(const char *crasfile, int append);
@@ -184,6 +186,21 @@ store_input(TaskLst *list, FILE *fp)
 	return 0;
 }
 
+static int
+parse_tasknum(const char *id)
+{
+	int tasknum;
+	char *endptr;
+
+	tasknum = strtol(id, &endptr, 10);
+	if (endptr[0] != '\0')
+		die("'%s' not a number.", id);
+	if (tasknum <= 0)
+		die("Task number must be greater than zero.");
+
+	return tasknum;
+}
+
 static void
 usage(void)
 {
@@ -234,25 +251,21 @@ output_mode(const char *crasfile, int mode)
 	task_lst_cleanup(&list);
 }
 
+
 static void
 delete_mode(const char *crasfile, const char *id)
 {
 	int tasknum;
-	char *endptr;
 	TaskLst list;
 
-	tasknum = strtol(id, &endptr, 10);
-	if (endptr[0] != '\0')
-		die("'%s' not a number.", id);
-	if (tasknum <= 0)
-		die("Task number must be greater than zero.");
+	tasknum = parse_tasknum(id);
 
 	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
 	if (task_lst_del_task(&list, tasknum - 1) < 0) {
 		task_lst_cleanup(&list);
-		die("Task #%d does not exist.", tasknum);
+		die(TASK_NONEXIST_MSG, tasknum);
 	}
 	write_crasfile(crasfile, list);
 
@@ -263,15 +276,10 @@ static void
 mark_list_mode(const char *crasfile, const char *id, int value)
 {
 	int tasknum;
-	char *endptr;
 	TaskLst list;
 	Task *task;
 
-	tasknum = strtol(id, &endptr, 10);
-	if (endptr[0] != '\0')
-		die("'%s' not a number.", id);
-	if (tasknum <= 0)
-		die("Task number must be greater than zero.");
+	tasknum = parse_tasknum(id);
 
 	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
@@ -279,7 +287,7 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 	task = task_lst_get_task(list, tasknum - 1);
 	if (task == NULL) {
 		task_lst_cleanup(&list);
-		die("Task #%d does not exist.", tasknum);
+		die(TASK_NONEXIST_MSG, tasknum);
 	}
 
 	task->status = value;
