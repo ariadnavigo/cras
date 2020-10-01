@@ -2,8 +2,7 @@
 
 Cras is an unapologetic daily task planner and manager for your terminal and WM
  status bar. It holds your tasks only for a limited amount of time (24 hours, 
-by default) and doesn't allow you to edit the task list after set up, except 
-for marking a task as done.
+by default).
 
 ## Build
 Cras doesn't require any external dependencies.
