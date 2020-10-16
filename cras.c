@@ -322,7 +322,7 @@ main(int argc, char *argv[])
 		mode = OUT_MODE;
 		break;
 	case 'v':
-		die("Cras %s. See LICENSE file for copyright and license "
+		die("cras %s. See LICENSE file for copyright and license "
 		    "details.", VERSION);
 		break;
 	case 'd':

@@ -1,4 +1,4 @@
-# Cras version
+# cras version
 VERSION = 0.4.2
 
 # Customize below to your needs

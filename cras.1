@@ -1,7 +1,7 @@
 .TH CRAS 1 cras\-VERSION
 .SH NAME
 .PP
-Cras - The Anti-Procrastination Tool
+cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
@@ -11,7 +11,7 @@ Cras - The Anti-Procrastination Tool
 .I file
 .SH DESCRIPTION
 .PP
-Cras is an unapologetic daily task planner and manager for your terminal and WM
+cras is an unapologetic daily task planner and manager for your terminal and WM
 status bar. It holds your tasks only for a limited amount of time (24 hours, by
 default).
 .SH OPTIONS
@@ -48,27 +48,27 @@ as pending.
 Show version information and exit.
 .SH USAGE
 .PP
-To set up a new task list, call Cras using the -n option. Cras will read each 
+To set up a new task list, call cras using the -n option. cras will read each 
 new line from standard input as a new task, until EOF is reached. Add new tasks
 to an already existing file using -n as well.
 .PP
-The newly created task list will be readable by Cras only up to the expiry
+The newly created task list will be readable by cras only up to the expiry
 date, which under the default configuration is 24 hours after originally saving
 it. Use -t to mark a task as done and -T to mark it back as pending.
 .PP
 You may delete tasks by using the -d option followed by its identifying number.
 .PP
-Running Cras with no options outputs the task list. For a summary, use the -o
+Running cras with no options outputs the task list. For a summary, use the -o
 flag; this short-form output is suitable for printing to WM status bars.
 .SH ENVIRONMENT VARIABLES
 .PP
-Execution of Cras is affected by the following environment variables:
+Execution of cras is affected by the following environment variables:
 .TP
 .B NO_COLOR
 Setting it to any value disables ANSI color escapes on output.
 .SH CONFIGURATION
 .PP
-Cras is configured by creating a custom config.h and recompiling the source 
+cras is configured by creating a custom config.h and recompiling the source 
 code.
 .SH BUGS
 .PP
