@@ -1,8 +1,8 @@
 # cras - The Anti-Procrastination Tool
 
 cras is an unapologetic daily task planner and manager for your terminal and WM
- status bar. It holds your tasks only for a limited amount of time (24 hours, 
-by default).
+status bar. It holds your tasks only for a limited amount of time (24 hours, by
+default).
 
 ## Build
 cras doesn't require any external dependencies.
@@ -35,7 +35,7 @@ Tasks due for: Sat Jun 20 15:57:28 2020
 ```
 
 To set a task list, pass the -n option and the name of the file that will hold
- the list. The tasks will be read from standard input, each line being a new 
+the list. The tasks will be read from standard input, each line being a new 
 task. cras stops reading when it reaches EOF.
  
 The -t and -T, followed by the task number, mark the task as done or pending, 
@@ -54,7 +54,7 @@ You may install cras by running the following command as root:
 ```
 
 This will install the binary under $PREFIX/bin, as defined by your environment,
- or /usr/local/bin by default. The Makefile supports the $DESTDIR variable as 
+or /usr/local/bin by default. The Makefile supports the $DESTDIR variable as 
 well.
 
 ## Cultural trivia
@@ -62,5 +62,5 @@ _cras_ means 'tomorrow' in Latin, hence the English word _procrastination_
 means, literally, 'the act of posponing things for tomorrow.'
 
 ## License
-cras is licensed under the Apache Public License version 2.0. See LICENSE
- file for copyright and license details.
+cras is licensed under the Apache Public License version 2.0. See LICENSE file
+for copyright and license details.
