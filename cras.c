@@ -24,6 +24,7 @@ enum {
 enum {
 	DEF_MODE,
 	APP_MODE,
+	INVAL_MODE,
 	NEW_MODE,
 	OUT_MODE,
 	DLT_MODE,
@@ -45,6 +46,7 @@ static void input_mode(const char *crasfile, int append);
 static void output_mode(const char *crasfile, int mode);
 static void delete_mode(const char *crasfile, const char *id);
 static void mark_list_mode(const char *crasfile, const char *id, int value);
+static void inval_mode(const char *crasfile);
 
 static void
 die(const char *fmt, ...)
@@ -214,7 +216,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-anov] [-dtT num] file");
+	die("usage: cras [-ainov] [-dtT num] file");
 }
 
 static void
@@ -308,6 +310,21 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 	task_lst_cleanup(&list);
 }
 
+static void
+inval_mode(const char *crasfile)
+{
+	TaskLst list;
+
+	task_lst_init(&list);
+	read_crasfile(&list, crasfile);
+
+	task_lst_set_expiration(&list, 0);
+
+	write_crasfile(crasfile, list);
+
+	task_lst_cleanup(&list);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -320,6 +337,11 @@ main(int argc, char *argv[])
 		if (mode != DEF_MODE)
 			usage();
 		mode = APP_MODE;
+		break;
+	case 'i':
+		if (mode != DEF_MODE)
+			usage();
+		mode = INVAL_MODE;
 		break;
 	case 'n':
 		if (mode != DEF_MODE)
@@ -365,6 +387,9 @@ main(int argc, char *argv[])
 	switch (mode) {
 	case APP_MODE:
 		input_mode(argv[0], 1);
+		return 0;
+	case INVAL_MODE:
+		inval_mode(argv[0]);
 		return 0;
 	case NEW_MODE:
 		input_mode(argv[0], 0);

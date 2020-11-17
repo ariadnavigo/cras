@@ -5,7 +5,7 @@ cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-anov ]
+.RB [ \-ainov ]
 .RB [ \-dtT 
 .IR num  ]
 .I file
@@ -20,6 +20,10 @@ default).
 Append new tasks to
 .I file.
 (Be aware that this doesn't update the expiration date.)
+.TP
+.B \-i
+Force expiration of
+.I file.
 .TP
 .B \-n
 Create new
@@ -57,6 +61,8 @@ date, which under the default configuration is 24 hours after originally saving
 it. Use -t to mark a task as done and -T to mark it back as pending.
 .PP
 You may delete tasks by using the -d option followed by its identifying number.
+If you want to set the whole file as already expired, you may do so by using 
+the -i option.
 .PP
 Running cras with no options outputs the task list. For a summary, use the -o
 flag; this short-form output is suitable for printing to WM status bars.
