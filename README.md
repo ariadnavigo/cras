@@ -62,5 +62,5 @@ _cras_ means 'tomorrow' in Latin, hence the English word _procrastination_
 means, literally, 'the act of posponing things for tomorrow.'
 
 ## License
-cras is licensed under the Apache Public License version 2.0. See LICENSE file
-for copyright and license details.
+cras is published under an MIT/X11/Expat-type License. See LICENSE file for 
+copyright and license details.
