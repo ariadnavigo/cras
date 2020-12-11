@@ -14,6 +14,7 @@ options:
 	@echo "CFLAGS 	= ${CFLAGS}"
 	@echo "LDFLAGS	= ${LDFLAGS}"
 	@echo "CC	= ${CC}"
+	@echo
 
 .c.o:
 	${CC} -c ${CFLAGS} $<
