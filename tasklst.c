@@ -125,6 +125,19 @@ task_lst_add_task(TaskLst *list, int status, const char *str)
 	newtask->next = NULL;
 
 	return 0;
+}
+
+int
+task_lst_edit_task(TaskLst *list, int i, const char *newstr)
+{
+	Task *edit;
+
+	if ((edit = task_lst_get_task(*list, i)) == NULL)
+		return -1;
+	
+	strncpy(edit->tdesc, newstr, TASK_LST_DESC_MAX_SIZE);
+
+	return 0;
 } 
 
 int
