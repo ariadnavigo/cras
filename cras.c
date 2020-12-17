@@ -14,7 +14,7 @@ static char *argv0; /* Required here by arg.h */
 #include "tasklst.h"
 
 #define TASK_NONEXIST_MSG "Task #%d does not exist."
-#define NUMARG_SIZE 5 /* 4 digits + '\0' for the numerical arg of -d/-t/-T */
+#define NUMARG_SIZE 5 /* 4 digits + '\0' for arg of -d/-e/-t/-T */
 
 enum {
 	SHORT_OUTPUT,
@@ -27,6 +27,7 @@ enum {
 	INVAL_MODE,
 	NEW_MODE,
 	OUT_MODE,
+	EDIT_MODE,
 	DLT_MODE,
 	MARK_MODE
 };
@@ -44,6 +45,7 @@ static int parse_tasknum(const char *id);
 static void usage(void);
 static void input_mode(const char *crasfile, int append);
 static void output_mode(const char *crasfile, int mode);
+static void edit_mode(const char *crasfile, const char *id);
 static void delete_mode(const char *crasfile, const char *id);
 static void mark_list_mode(const char *crasfile, const char *id, int value);
 static void inval_mode(const char *crasfile);
@@ -216,7 +218,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ainov] [-dtT num] file");
+	die("usage: cras [-ainov] [-detT num] file");
 }
 
 static void
@@ -263,6 +265,30 @@ output_mode(const char *crasfile, int mode)
 	task_lst_cleanup(&list);
 }
 
+static void
+edit_mode(const char *crasfile, const char *id)
+{
+	int tasknum;
+	TaskLst list;
+	char newstr[TASK_LST_DESC_MAX_SIZE];
+
+	tasknum = parse_tasknum(id);
+
+	task_lst_init(&list);
+	read_crasfile(&list, crasfile);
+
+	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
+	if (newstr[strlen(newstr) - 1] == '\n')
+		newstr[strlen(newstr) - 1] = '\0';
+
+	if (task_lst_edit_task(&list, tasknum - 1, newstr) < 0) {
+		task_lst_cleanup(&list);
+		die(TASK_NONEXIST_MSG, tasknum);
+	}
+	write_crasfile(crasfile, list);
+
+	task_lst_cleanup(&list);
+}
 
 static void
 delete_mode(const char *crasfile, const char *id)
@@ -363,6 +389,12 @@ main(int argc, char *argv[])
 		mode = DLT_MODE;
 		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
+	case 'e':
+		if (mode != DEF_MODE)
+			usage();
+		mode = EDIT_MODE;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
 	case 't':
 		if (mode != DEF_MODE)
 			usage();
@@ -396,6 +428,9 @@ main(int argc, char *argv[])
 		return 0;
 	case OUT_MODE:
 		output_mode(argv[0], SHORT_OUTPUT);
+		return 0;
+	case EDIT_MODE:
+		edit_mode(argv[0], numarg);
 		return 0;
 	case DLT_MODE:
 		delete_mode(argv[0], numarg);
