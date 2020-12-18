@@ -172,6 +172,8 @@ task_lst_read_from_file(TaskLst *list, FILE *fp)
 	char *ptr, *endptr;
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 	
+	task_lst_init(list);
+
 	if (fscanf(fp, "%" SCNd64 "\n", &list->expiry) <= 0)
 		return -1;
 

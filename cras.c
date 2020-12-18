@@ -38,7 +38,7 @@ static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static void print_short_output(TaskLst list);
 static void print_output(TaskLst list);
-static int read_crasfile(TaskLst *list, const char *crasfile);
+static void read_crasfile(TaskLst *list, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
 static int parse_tasknum(const char *id);
@@ -127,16 +127,13 @@ print_output(TaskLst list)
 	printf(" to do/done");
 }
 
-static int
+static void
 read_crasfile(TaskLst *list, const char *crasfile)
 {
 	int read_stat;
 	FILE *fp;
 
 	fp = fopen(crasfile, "r");
-	if (errno == ENOENT)
-		return -1; /* We give the chance to create the file later. */
-
 	if (fp == NULL) {
 		task_lst_cleanup(list);
 		die("Could not read from %s: %s", crasfile, strerror(errno));
@@ -154,8 +151,6 @@ read_crasfile(TaskLst *list, const char *crasfile)
 		task_lst_cleanup(list);
 		die("Due date passed."); 
 	}
-
-	return 0;
 }
 
 static void
@@ -231,7 +226,6 @@ delete_mode(const char *crasfile, const char *id)
 
 	tasknum = parse_tasknum(id);
 
-	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
 	if (task_lst_del_task(&list, tasknum - 1) < 0) {
@@ -252,7 +246,6 @@ edit_mode(const char *crasfile, const char *id)
 
 	tasknum = parse_tasknum(id);
 
-	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
 	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
@@ -273,9 +266,10 @@ input_mode(const char *crasfile, int append)
 {
 	TaskLst list;
 
-	task_lst_init(&list);
 	if (append > 0)
 		read_crasfile(&list, crasfile);
+	else
+		task_lst_init(&list);
 
 	if (store_input(&list, stdin) < 0) {
 		task_lst_cleanup(&list);
@@ -296,11 +290,9 @@ inval_mode(const char *crasfile)
 {
 	TaskLst list;
 
-	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
 	task_lst_set_expiration(&list, 0);
-
 	write_crasfile(crasfile, list);
 
 	task_lst_cleanup(&list);
@@ -315,7 +307,6 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 
 	tasknum = parse_tasknum(id);
 
-	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
 	task = task_lst_get_task(list, tasknum - 1);
@@ -337,11 +328,7 @@ output_mode(const char *crasfile, int mode)
 {
 	TaskLst list;
 
-	task_lst_init(&list);
-	if (read_crasfile(&list, crasfile) < 0) {
-		task_lst_cleanup(&list);
-		die("Could not find file %s", crasfile);
-	}
+	read_crasfile(&list, crasfile);
 
 	if (mode == SHORT_OUTPUT)
 		print_short_output(list);
