@@ -22,16 +22,17 @@ enum {
 };
 
 enum {
-	DEF_MODE,
 	APP_MODE,
-	INVAL_MODE,
-	NEW_MODE,
-	OUT_MODE,
-	EDIT_MODE,
+	DEF_MODE,
 	DLT_MODE,
-	MARK_MODE
+	EDIT_MODE,
+	INVAL_MODE,
+	MARK_MODE,
+	NEW_MODE,
+	OUT_MODE
 };
 
+/* Auxiliary functions */
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
@@ -41,14 +42,15 @@ static int read_crasfile(TaskLst *list, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
 static int parse_tasknum(const char *id);
-
 static void usage(void);
-static void input_mode(const char *crasfile, int append);
-static void output_mode(const char *crasfile, int mode);
-static void edit_mode(const char *crasfile, const char *id);
+
+/* Execution modes */
 static void delete_mode(const char *crasfile, const char *id);
-static void mark_list_mode(const char *crasfile, const char *id, int value);
+static void edit_mode(const char *crasfile, const char *id);
+static void input_mode(const char *crasfile, int append);
 static void inval_mode(const char *crasfile);
+static void mark_list_mode(const char *crasfile, const char *id, int value);
+static void output_mode(const char *crasfile, int mode);
 
 static void
 die(const char *fmt, ...)
@@ -222,45 +224,21 @@ usage(void)
 }
 
 static void
-input_mode(const char *crasfile, int append)
+delete_mode(const char *crasfile, const char *id)
 {
+	int tasknum;
 	TaskLst list;
 
+	tasknum = parse_tasknum(id);
+
 	task_lst_init(&list);
-	if (append > 0)
-		read_crasfile(&list, crasfile);
+	read_crasfile(&list, crasfile);
 
-	if (store_input(&list, stdin) < 0) {
+	if (task_lst_del_task(&list, tasknum - 1) < 0) {
 		task_lst_cleanup(&list);
-		die("Internal memory error.");
+		die(TASK_NONEXIST_MSG, tasknum);
 	}
-
-	/* Only set a new expiration date if creating a new file */
-	if (append == 0)
-		task_lst_set_expiration(&list, crasfile_expiry);
-
 	write_crasfile(crasfile, list);
-
-	task_lst_cleanup(&list);
-}
-
-static void
-output_mode(const char *crasfile, int mode)
-{
-	TaskLst list;
-
-	task_lst_init(&list);
-	if (read_crasfile(&list, crasfile) < 0) {
-		task_lst_cleanup(&list);
-		die("Could not find file %s", crasfile);
-	}
-
-	if (mode == SHORT_OUTPUT)
-		print_short_output(list);
-	else
-		print_output(list);
-
-	putchar('\n');
 
 	task_lst_cleanup(&list);
 }
@@ -291,20 +269,38 @@ edit_mode(const char *crasfile, const char *id)
 }
 
 static void
-delete_mode(const char *crasfile, const char *id)
+input_mode(const char *crasfile, int append)
 {
-	int tasknum;
 	TaskLst list;
 
-	tasknum = parse_tasknum(id);
+	task_lst_init(&list);
+	if (append > 0)
+		read_crasfile(&list, crasfile);
+
+	if (store_input(&list, stdin) < 0) {
+		task_lst_cleanup(&list);
+		die("Internal memory error.");
+	}
+
+	/* Only set a new expiration date if creating a new file */
+	if (append == 0)
+		task_lst_set_expiration(&list, crasfile_expiry);
+
+	write_crasfile(crasfile, list);
+
+	task_lst_cleanup(&list);
+}
+
+static void
+inval_mode(const char *crasfile)
+{
+	TaskLst list;
 
 	task_lst_init(&list);
 	read_crasfile(&list, crasfile);
 
-	if (task_lst_del_task(&list, tasknum - 1) < 0) {
-		task_lst_cleanup(&list);
-		die(TASK_NONEXIST_MSG, tasknum);
-	}
+	task_lst_set_expiration(&list, 0);
+
 	write_crasfile(crasfile, list);
 
 	task_lst_cleanup(&list);
@@ -337,16 +333,22 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 }
 
 static void
-inval_mode(const char *crasfile)
+output_mode(const char *crasfile, int mode)
 {
 	TaskLst list;
 
 	task_lst_init(&list);
-	read_crasfile(&list, crasfile);
+	if (read_crasfile(&list, crasfile) < 0) {
+		task_lst_cleanup(&list);
+		die("Could not find file %s", crasfile);
+	}
 
-	task_lst_set_expiration(&list, 0);
+	if (mode == SHORT_OUTPUT)
+		print_short_output(list);
+	else
+		print_output(list);
 
-	write_crasfile(crasfile, list);
+	putchar('\n');
 
 	task_lst_cleanup(&list);
 }
@@ -364,6 +366,18 @@ main(int argc, char *argv[])
 			usage();
 		mode = APP_MODE;
 		break;
+	case 'd':
+		if (mode != DEF_MODE)
+			usage();
+		mode = DLT_MODE;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
+	case 'e':
+		if (mode != DEF_MODE)
+			usage();
+		mode = EDIT_MODE;
+		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		break;
 	case 'i':
 		if (mode != DEF_MODE)
 			usage();
@@ -379,22 +393,6 @@ main(int argc, char *argv[])
 			usage();
 		mode = OUT_MODE;
 		break;
-	case 'v':
-		die("cras %s. See LICENSE file for copyright and license "
-		    "details.", VERSION);
-		break;
-	case 'd':
-		if (mode != DEF_MODE)
-			usage();
-		mode = DLT_MODE;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
-	case 'e':
-		if (mode != DEF_MODE)
-			usage();
-		mode = EDIT_MODE;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
 	case 't':
 		if (mode != DEF_MODE)
 			usage();
@@ -409,6 +407,10 @@ main(int argc, char *argv[])
 		task_value = TASK_TODO;
 		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
+	case 'v':
+		die("cras %s. See LICENSE file for copyright and license "
+		    "details.", VERSION);
+		break;
 	default:
 		usage(); /* usage() dies, so nothing else needed. */
 	} ARGEND;
@@ -420,23 +422,23 @@ main(int argc, char *argv[])
 	case APP_MODE:
 		input_mode(argv[0], 1);
 		return 0;
+	case DLT_MODE:
+		delete_mode(argv[0], numarg);
+		return 0;
+	case EDIT_MODE:
+		edit_mode(argv[0], numarg);
+		return 0;
 	case INVAL_MODE:
 		inval_mode(argv[0]);
+		return 0;
+	case MARK_MODE:
+		mark_list_mode(argv[0], numarg, task_value);
 		return 0;
 	case NEW_MODE:
 		input_mode(argv[0], 0);
 		return 0;
 	case OUT_MODE:
 		output_mode(argv[0], SHORT_OUTPUT);
-		return 0;
-	case EDIT_MODE:
-		edit_mode(argv[0], numarg);
-		return 0;
-	case DLT_MODE:
-		delete_mode(argv[0], numarg);
-		return 0;
-	case MARK_MODE:
-		mark_list_mode(argv[0], numarg, task_value);
 		return 0;
 	}
 	
