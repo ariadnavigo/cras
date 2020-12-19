@@ -89,8 +89,6 @@ task_lst_count_done(TaskLst list)
 Task *
 task_lst_get_task(TaskLst list, int i)
 {
-	/* TODO: Maybe binary search? */
-
 	Task *ptr;
 	
 	for (ptr = list.first; i > 0; ptr = ptr->next) {
