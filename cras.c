@@ -37,7 +37,7 @@ static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static void print_task_list(TaskLst list);
-static void print_short_output(TaskLst list);
+static void print_counter(TaskLst list);
 static void print_output(TaskLst list);
 static void read_crasfile(TaskLst *list, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst list);
@@ -116,7 +116,7 @@ print_task_list(TaskLst list)
 }
 
 static void
-print_short_output(TaskLst list)
+print_counter(TaskLst list)
 {
 	printf_color(task_todo_color, "%d", task_lst_count_todo(list));
 	printf("/");
@@ -128,7 +128,7 @@ print_output(TaskLst list)
 {
 	printf("Due date: %s\n", ctime(&list.expiry));
 	print_task_list(list);
-	print_short_output(list);
+	print_counter(list);
 	printf(" to do/done");
 }
 
@@ -336,7 +336,7 @@ output_mode(const char *crasfile, int mode)
 	read_crasfile(&list, crasfile);
 
 	if (mode == SHORT_OUTPUT)
-		print_short_output(list);
+		print_counter(list);
 	else
 		print_output(list);
 
