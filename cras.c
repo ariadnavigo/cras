@@ -324,6 +324,7 @@ output_mode(const char *crasfile, int mode)
 
 	if (mode == SHORT_OUT_MODE) {
 		print_counter(list);
+		putchar('\n');
 	} else if (mode == TASKS_OUT_MODE) {
 		print_task_list(list);
 	} else { 
