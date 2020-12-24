@@ -125,10 +125,8 @@ read_crasfile(TaskLst *list, const char *crasfile)
 	FILE *fp;
 
 	fp = fopen(crasfile, "r");
-	if (fp == NULL) {
-		task_lst_cleanup(list);
+	if (fp == NULL)
 		die("Could not read from %s: %s", crasfile, strerror(errno));
-	}
 
 	read_stat = task_lst_read_from_file(list, fp);
 	fclose(fp);
