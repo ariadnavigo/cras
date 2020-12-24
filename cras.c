@@ -17,19 +17,16 @@ static char *argv0; /* Required here by arg.h */
 #define NUMARG_SIZE 5 /* 4 digits + '\0' for arg of -d/-e/-t/-T */
 
 enum {
-	SHORT_OUTPUT,
-	LONG_OUTPUT
-};
-
-enum {
 	APP_MODE,
 	DEF_MODE,
 	DLT_MODE,
 	EDIT_MODE,
 	INVAL_MODE,
+	LONG_OUT_MODE,
 	MARK_MODE,
 	NEW_MODE,
-	OUT_MODE
+	SHORT_OUT_MODE,
+	TASKS_OUT_MODE
 };
 
 /* Auxiliary functions */
@@ -210,7 +207,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ainov] [-detT num] file");
+	die("usage: cras [-ailnov] [-detT num] file");
 }
 
 static void
@@ -325,8 +322,10 @@ output_mode(const char *crasfile, int mode)
 
 	read_crasfile(&list, crasfile);
 
-	if (mode == SHORT_OUTPUT) {
+	if (mode == SHORT_OUT_MODE) {
 		print_counter(list);
+	} else if (mode == TASKS_OUT_MODE) {
+		print_task_list(list);
 	} else {
 		printf("Due date: %s\n", ctime(&list.expiry));
 		print_task_list(list);
@@ -369,6 +368,11 @@ main(int argc, char *argv[])
 			usage();
 		mode = INVAL_MODE;
 		break;
+	case 'l':
+		if (mode != DEF_MODE)
+			usage();
+		mode = TASKS_OUT_MODE;
+		break;
 	case 'n':
 		if (mode != DEF_MODE)
 			usage();
@@ -377,7 +381,7 @@ main(int argc, char *argv[])
 	case 'o':
 		if (mode != DEF_MODE)
 			usage();
-		mode = OUT_MODE;
+		mode = SHORT_OUT_MODE;
 		break;
 	case 't':
 		if (mode != DEF_MODE)
@@ -423,13 +427,13 @@ main(int argc, char *argv[])
 	case NEW_MODE:
 		input_mode(argv[0], 0);
 		return 0;
-	case OUT_MODE:
-		output_mode(argv[0], SHORT_OUTPUT);
+	default:
+		output_mode(argv[0], mode);
 		return 0;
 	}
 	
 	/* Default behavior: long-form output */
-	output_mode(argv[0], LONG_OUTPUT);
+	output_mode(argv[0], LONG_OUT_MODE);
 
 	return 0;
 }
