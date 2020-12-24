@@ -33,7 +33,7 @@ enum {
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
-static void print_task_list(TaskLst list);
+static int print_task_list(TaskLst list);
 static void print_counter(TaskLst list);
 static void read_crasfile(TaskLst *list, const char *crasfile);
 static void write_crasfile(const char *crasfile, TaskLst list);
@@ -96,7 +96,7 @@ print_task(Task task, int i)
 	printf("%s\n", task.tdesc);
 }
 
-static void
+static int
 print_task_list(TaskLst list)
 {
 	Task *ptr;
@@ -107,8 +107,7 @@ print_task_list(TaskLst list)
 		++i;
 	}
 
-	if (i > 0)
-		putchar('\n');
+	return i;
 }
 
 static void
@@ -319,6 +318,7 @@ static void
 output_mode(const char *crasfile, int mode)
 {
 	TaskLst list;
+	int cnt;
 
 	read_crasfile(&list, crasfile);
 
@@ -326,14 +326,15 @@ output_mode(const char *crasfile, int mode)
 		print_counter(list);
 	} else if (mode == TASKS_OUT_MODE) {
 		print_task_list(list);
-	} else {
+	} else { 
+		/* LONG_OUT_MODE */
 		printf("Due date: %s\n", ctime(&list.expiry));
-		print_task_list(list);
+		cnt = print_task_list(list);
+		if (cnt > 0) 
+			putchar('\n');
 		print_counter(list);
-		printf(" to do/done");
+		printf(" to do/done\n");
 	}
-
-	putchar('\n');
 
 	task_lst_cleanup(&list);
 }
