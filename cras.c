@@ -36,6 +36,7 @@ enum {
 static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
+static void print_task_list(TaskLst list);
 static void print_short_output(TaskLst list);
 static void print_output(TaskLst list);
 static void read_crasfile(TaskLst *list, const char *crasfile);
@@ -100,6 +101,21 @@ print_task(Task task, int i)
 }
 
 static void
+print_task_list(TaskLst list)
+{
+	Task *ptr;
+	int i;
+
+	for(i = 0, ptr = list.first; ptr != NULL; ptr = ptr->next) {
+		print_task(*ptr, i);
+		++i;
+	}
+
+	if (i > 0)
+		putchar('\n');
+}
+
+static void
 print_short_output(TaskLst list)
 {
 	printf_color(task_todo_color, "%d", task_lst_count_todo(list));
@@ -110,19 +126,8 @@ print_short_output(TaskLst list)
 static void
 print_output(TaskLst list)
 {
-	int i;
-	Task *ptr;
-
 	printf("Due date: %s\n", ctime(&list.expiry));
-
-	for(i = 0, ptr = list.first; ptr != NULL; ptr = ptr->next) {
-		print_task(*ptr, i);
-		++i;
-	}
-
-	if (i > 0)
-		putchar('\n');
-
+	print_task_list(list);
 	print_short_output(list);
 	printf(" to do/done");
 }
