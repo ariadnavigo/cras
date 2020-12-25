@@ -71,7 +71,7 @@ task_lst_set_expiration(TaskLst *list, int64_t delta)
 int
 task_lst_expired(TaskLst list)
 {
-	return (time(NULL) > list.expiry) ? 1 : 0;
+	return time(NULL) > list.expiry;
 }
 
 int
