@@ -35,19 +35,19 @@ static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(TaskLst list);
 static void print_counter(TaskLst list);
-static void read_file(TaskLst *list, const char *crasfile);
-static void write_file(const char *crasfile, TaskLst list);
+static void read_file(TaskLst *list, const char *fname);
+static void write_file(const char *fname, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
 static int parse_tasknum(const char *id);
 static void usage(void);
 
 /* Execution modes */
-static void delete_mode(const char *crasfile, const char *id);
-static void edit_mode(const char *crasfile, const char *id);
-static void input_mode(const char *crasfile, int append);
-static void inval_mode(const char *crasfile);
-static void mark_list_mode(const char *crasfile, const char *id, int value);
-static void output_mode(const char *crasfile, int mode);
+static void delete_mode(const char *fname, const char *id);
+static void edit_mode(const char *fname, const char *id);
+static void input_mode(const char *fname, int append);
+static void inval_mode(const char *fname);
+static void mark_list_mode(const char *fname, const char *id, int value);
+static void output_mode(const char *fname, int mode);
 
 static void
 die(const char *fmt, ...)
@@ -119,14 +119,14 @@ print_counter(TaskLst list)
 }
 
 static void
-read_file(TaskLst *list, const char *crasfile)
+read_file(TaskLst *list, const char *fname)
 {
 	int read_stat;
 	FILE *fp;
 
-	fp = fopen(crasfile, "r");
+	fp = fopen(fname, "r");
 	if (fp == NULL)
-		die("Could not read from %s: %s", crasfile, strerror(errno));
+		die("Could not read from %s: %s", fname, strerror(errno));
 
 	read_stat = task_lst_read_from_file(list, fp);
 	fclose(fp);
@@ -143,13 +143,13 @@ read_file(TaskLst *list, const char *crasfile)
 }
 
 static void
-write_file(const char *crasfile, TaskLst list)
+write_file(const char *fname, TaskLst list)
 {
 	FILE *fp;
 
-	if ((fp = fopen(crasfile, "w")) == NULL) {
+	if ((fp = fopen(fname, "w")) == NULL) {
 		task_lst_cleanup(&list);
-		die("Could not write to %s: %s", crasfile, strerror(errno));
+		die("Could not write to %s: %s", fname, strerror(errno));
 	}
 
 	task_lst_write_to_file(fp, list);
@@ -208,26 +208,26 @@ usage(void)
 }
 
 static void
-delete_mode(const char *crasfile, const char *id)
+delete_mode(const char *fname, const char *id)
 {
 	int tasknum;
 	TaskLst list;
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, crasfile);
+	read_file(&list, fname);
 
 	if (task_lst_del_task(&list, tasknum - 1) < 0) {
 		task_lst_cleanup(&list);
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
-	write_file(crasfile, list);
+	write_file(fname, list);
 
 	task_lst_cleanup(&list);
 }
 
 static void
-edit_mode(const char *crasfile, const char *id)
+edit_mode(const char *fname, const char *id)
 {
 	int tasknum;
 	TaskLst list;
@@ -235,7 +235,7 @@ edit_mode(const char *crasfile, const char *id)
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, crasfile);
+	read_file(&list, fname);
 
 	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
 	if (newstr[strlen(newstr) - 1] == '\n')
@@ -245,18 +245,18 @@ edit_mode(const char *crasfile, const char *id)
 		task_lst_cleanup(&list);
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
-	write_file(crasfile, list);
+	write_file(fname, list);
 
 	task_lst_cleanup(&list);
 }
 
 static void
-input_mode(const char *crasfile, int append)
+input_mode(const char *fname, int append)
 {
 	TaskLst list;
 
 	if (append > 0)
-		read_file(&list, crasfile);
+		read_file(&list, fname);
 	else
 		task_lst_init(&list);
 
@@ -267,28 +267,28 @@ input_mode(const char *crasfile, int append)
 
 	/* Only set a new expiration date if creating a new file */
 	if (append == 0)
-		task_lst_set_expiration(&list, crasfile_expiry);
+		task_lst_set_expiration(&list, expiry_delta);
 
-	write_file(crasfile, list);
+	write_file(fname, list);
 
 	task_lst_cleanup(&list);
 }
 
 static void
-inval_mode(const char *crasfile)
+inval_mode(const char *fname)
 {
 	TaskLst list;
 
-	read_file(&list, crasfile);
+	read_file(&list, fname);
 
 	task_lst_set_expiration(&list, 0);
-	write_file(crasfile, list);
+	write_file(fname, list);
 
 	task_lst_cleanup(&list);
 }
 
 static void
-mark_list_mode(const char *crasfile, const char *id, int value)
+mark_list_mode(const char *fname, const char *id, int value)
 {
 	int tasknum;
 	TaskLst list;
@@ -296,7 +296,7 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, crasfile);
+	read_file(&list, fname);
 
 	task = task_lst_get_task(list, tasknum - 1);
 	if (task == NULL) {
@@ -305,7 +305,7 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 	}
 
 	task->status = value;
-	write_file(crasfile, list);
+	write_file(fname, list);
 
 	print_task(*task, tasknum - 1);
 
@@ -313,12 +313,12 @@ mark_list_mode(const char *crasfile, const char *id, int value)
 }
 
 static void
-output_mode(const char *crasfile, int mode)
+output_mode(const char *fname, int mode)
 {
 	TaskLst list;
 	int cnt;
 
-	read_file(&list, crasfile);
+	read_file(&list, fname);
 
 	if (mode == SHORT_OUT_MODE) {
 		print_counter(list);
