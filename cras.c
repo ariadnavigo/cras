@@ -159,8 +159,10 @@ write_file(const char *fname, TaskLst list)
 static int
 store_input(TaskLst *list, FILE *fp)
 {
+	int cnt;
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
 
+	cnt = 0;
 	while (feof(fp) == 0) {
 		if (fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp) == NULL)
 			break;
@@ -181,9 +183,11 @@ store_input(TaskLst *list, FILE *fp)
 
 		if (task_lst_add_task(list, TASK_TODO, linebuf) < 0)
 			return -1;
+
+		++cnt;
 	}
 
-	return 0;
+	return cnt;
 }
 
 static int
@@ -253,6 +257,7 @@ edit_mode(const char *fname, const char *id)
 static void
 input_mode(const char *fname, int append)
 {
+	int task_num;
 	TaskLst list;
 
 	if (append > 0)
@@ -260,18 +265,22 @@ input_mode(const char *fname, int append)
 	else
 		task_lst_init(&list);
 
-	if (store_input(&list, stdin) < 0) {
+	task_num = store_input(&list, stdin);
+	if (task_num < 0) {
 		task_lst_cleanup(&list);
 		die("Internal memory error.");
+	} else if (task_num == 0) {
+		task_lst_cleanup(&list);
+		die("Aborting: empty task list.");
+	} else {
+		/* Only set a new expiration date if creating a new file */
+		if (append == 0)
+			task_lst_set_expiration(&list, expiry_delta);
+
+		write_file(fname, list);
+
+		task_lst_cleanup(&list);
 	}
-
-	/* Only set a new expiration date if creating a new file */
-	if (append == 0)
-		task_lst_set_expiration(&list, expiry_delta);
-
-	write_file(fname, list);
-
-	task_lst_cleanup(&list);
 }
 
 static void
