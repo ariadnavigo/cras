@@ -336,12 +336,12 @@ output_mode(const char *fname, int mode)
 		print_task_list(list);
 	} else { 
 		/* LONG_OUT_MODE */
-		printf("Due date: %s\n", ctime(&list.expiry));
+		printf("%s: %s\n", expire_str, ctime(&list.expiry));
 		cnt = print_task_list(list);
 		if (cnt > 0) 
 			putchar('\n');
 		print_counter(list);
-		printf(" to do/done\n");
+		printf(" %s\n", smmry_str);
 	}
 
 	task_lst_cleanup(&list);
