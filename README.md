@@ -25,13 +25,13 @@ the pending tasks, but only if the expiration time has not passed yet.
 
 ```
 $ cras my-dev-todo
-Tasks due for: Sat Jun 20 15:57:28 2020
+Due date: Sat Jun 20 15:57:28 2020
 
 #01 [TODO] Write README.md
 #02 [TODO] Set up git repo for cras
 #03 [TODO] Succeed in life
 
-3/0/3 to do/done/total
+3/0 to do/done
 ```
 
 To set a task list, pass the -n option and the name of the file that will hold
