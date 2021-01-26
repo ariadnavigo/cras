@@ -25,6 +25,7 @@ enum {
 	LONG_OUT_MODE,
 	MARK_MODE,
 	NEW_MODE,
+	SHORT_DESC_OUT_MODE,
 	SHORT_OUT_MODE,
 	TASKS_OUT_MODE
 };
@@ -208,7 +209,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ailnov] [-detT num] file");
+	die("usage: cras [-ailnoOv] [-detT num] file");
 }
 
 static void
@@ -332,6 +333,9 @@ output_mode(const char *fname, int mode)
 	if (mode == SHORT_OUT_MODE) {
 		print_counter(list);
 		putchar('\n');
+	} else if (mode == SHORT_DESC_OUT_MODE) {
+		print_counter(list);
+		printf(" %s\n", smmry_str);
 	} else if (mode == TASKS_OUT_MODE) {
 		print_task_list(list);
 	} else { 
@@ -391,6 +395,11 @@ main(int argc, char *argv[])
 		if (mode != DEF_MODE)
 			usage();
 		mode = SHORT_OUT_MODE;
+		break;
+	case 'O':
+		if (mode != DEF_MODE)
+			usage();
+		mode = SHORT_DESC_OUT_MODE;
 		break;
 	case 't':
 		if (mode != DEF_MODE)

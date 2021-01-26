@@ -5,7 +5,7 @@ cras - The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-ailnov ]
+.RB [ \-ailnoOv ]
 .RB [ \-detT 
 .IR num  ]
 .I file
@@ -44,7 +44,10 @@ Create new
 overwriting previous contents if it already exists.
 .TP
 .B \-o
-Switch to short-form output.
+Only print the counter of tasks pending and done.
+.TP
+.B \-O
+Only print counter+description.
 .TP
 .BI \-t " num"
 Mark task 
@@ -73,9 +76,11 @@ You may similarly edit the description of a task by using the -e option. If you
 want to set the whole file as already expired, you may do so by using the -i 
 option.
 .PP
-Running cras with no options outputs the task list. For a summary, use the -o
-flag; this short-form output is suitable for printing to WM status bars. Using
--l will print only the list of tasks.
+Running cras with no options outputs the task list. For just a counter of 
+tasks pending and done, pass the -o flag to cras. The -O flag extends the 
+counter with the description shown in the default output mode. These two modes
+are especially suited for integrating cras into scripts or WM status bars.
+Using -l will print only the list of tasks.
 .SH ENVIRONMENT VARIABLES
 .PP
 Execution of cras is affected by the following environment variables:
