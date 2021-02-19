@@ -8,7 +8,7 @@ cras - The Anti-Procrastination Tool
 .RB [ \-ailnoOv ]
 .RB [ \-detT 
 .IR num  ]
-.I file
+.RB [ file ]
 .SH DESCRIPTION
 .PP
 cras is an unapologetic daily task planner and manager for your terminal and WM
@@ -84,6 +84,11 @@ Using -l will print only the list of tasks.
 .SH ENVIRONMENT VARIABLES
 .PP
 Execution of cras is affected by the following environment variables:
+.TP
+.B CRAS_DEF_FILE
+Sets a default file location that cras opens if run without a
+.I file
+argument. 
 .TP
 .B NO_COLOR
 Setting it to any value disables ANSI color escapes on output.

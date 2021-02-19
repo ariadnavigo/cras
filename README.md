@@ -20,8 +20,11 @@ provided in config.def.h.
 
 ## Usage
 cras reads a task list from a file that is passed as an argument through the 
-command line. With no further options added, the default behavior is to output
-the pending tasks, but only if the expiration time has not passed yet.
+command line. Alternatively, you may export the ```CRAS_DEF_FILE``` variable
+to set a default file to operate with. 
+
+With no further options added, the default behavior is to output the pending 
+tasks, but only if the expiration time has not passed yet.
 
 ```
 $ cras my-dev-todo
