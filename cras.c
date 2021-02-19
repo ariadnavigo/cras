@@ -209,7 +209,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ailnoOv] [-detT num] file");
+	die("usage: cras [-ailnoOv] [-detT num] [file]");
 }
 
 static void
@@ -355,6 +355,7 @@ int
 main(int argc, char *argv[])
 {
 	char numarg[NUMARG_SIZE];
+	const char *fileptr;
 	int mode, task_value;
 
 	mode = DEF_MODE;
@@ -423,35 +424,39 @@ main(int argc, char *argv[])
 		usage(); /* usage() dies, so nothing else needed. */
 	} ARGEND;
 
-	if (argc <= 0)
-		usage();
+	if (argc <= 0) {
+		if ((fileptr = getenv("CRAS_DEF_FILE")) == NULL)
+			die("CRAS_DEF_FILE environment variable not set.");
+	} else {
+		fileptr = argv[0];
+	}
 
 	switch (mode) {
 	case APP_MODE:
-		input_mode(argv[0], 1);
+		input_mode(fileptr, 1);
 		return 0;
 	case DLT_MODE:
-		delete_mode(argv[0], numarg);
+		delete_mode(fileptr, numarg);
 		return 0;
 	case EDIT_MODE:
-		edit_mode(argv[0], numarg);
+		edit_mode(fileptr, numarg);
 		return 0;
 	case INVAL_MODE:
-		inval_mode(argv[0]);
+		inval_mode(fileptr);
 		return 0;
 	case MARK_MODE:
-		mark_list_mode(argv[0], numarg, task_value);
+		mark_list_mode(fileptr, numarg, task_value);
 		return 0;
 	case NEW_MODE:
-		input_mode(argv[0], 0);
+		input_mode(fileptr, 0);
 		return 0;
 	default:
-		output_mode(argv[0], mode);
+		output_mode(fileptr, mode);
 		return 0;
 	}
 	
 	/* Default behavior: long-form output */
-	output_mode(argv[0], LONG_OUT_MODE);
+	output_mode(fileptr, LONG_OUT_MODE);
 
 	return 0;
 }
