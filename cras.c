@@ -417,8 +417,7 @@ main(int argc, char *argv[])
 		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'v':
-		die("cras %s. See LICENSE file for copyright and license "
-		    "details.", VERSION);
+		die("cras %s", VERSION);
 		break;
 	default:
 		usage(); /* usage() dies, so nothing else needed. */
