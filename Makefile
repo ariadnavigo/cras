@@ -16,13 +16,15 @@ options:
 	@echo "CC	= ${CC}"
 	@echo
 
+config.h:
+	cp config.def.h $@
+
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-${OBJ}: config.h config.mk
+cras.o: arg.h tasklst.h
 
-config.h:
-	cp config.def.h $@
+${OBJ}: config.h config.mk
 
 cras: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
