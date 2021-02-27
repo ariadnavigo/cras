@@ -22,9 +22,9 @@ config.h:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-cras.o: arg.h tasklst.h
+cras.o: arg.h config.h tasklst.h
 
-${OBJ}: config.h config.mk
+${OBJ}: config.mk
 
 cras: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
