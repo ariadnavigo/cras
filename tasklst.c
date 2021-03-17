@@ -136,7 +136,7 @@ task_lst_edit_task(TaskLst *list, int i, const char *newstr)
 	strncpy(edit->tdesc, newstr, TASK_LST_DESC_MAX_SIZE);
 
 	return 0;
-} 
+}
 
 int
 task_lst_del_task(TaskLst *list, int i)

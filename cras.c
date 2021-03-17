@@ -139,7 +139,7 @@ read_file(TaskLst *list, const char *fname)
 
 	if (task_lst_expired(*list) > 0) {
 		task_lst_cleanup(list);
-		die("Due date passed."); 
+		die("Due date passed.");
 	}
 }
 
@@ -338,11 +338,11 @@ output_mode(const char *fname, int mode)
 		printf(" %s\n", smmry_str);
 	} else if (mode == TASKS_OUT_MODE) {
 		print_task_list(list);
-	} else { 
+	} else {
 		/* LONG_OUT_MODE */
 		printf("%s: %s\n", expire_str, ctime(&list.expiry));
 		cnt = print_task_list(list);
-		if (cnt > 0) 
+		if (cnt > 0)
 			putchar('\n');
 		print_counter(list);
 		printf(" %s\n", smmry_str);
