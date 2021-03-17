@@ -453,7 +453,7 @@ main(int argc, char *argv[])
 		output_mode(fileptr, mode);
 		return 0;
 	}
-	
+
 	/* Default behavior: long-form output */
 	output_mode(fileptr, LONG_OUT_MODE);
 

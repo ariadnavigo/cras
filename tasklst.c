@@ -16,7 +16,7 @@ task_lst_count_status(TaskLst list, int status)
 {
 	int total;
 	Task *ptr;
-	
+
 	for (ptr = list.first, total = 0; ptr != NULL; ptr = ptr->next) {
 		if (ptr->status == status)
 			++total;
@@ -53,7 +53,7 @@ void
 task_lst_cleanup(TaskLst *list)
 {
 	Task *ptr, *next;
-	
+
 	ptr = list->first;
 	while (ptr != NULL) {
 		next = ptr->next;
@@ -90,7 +90,7 @@ Task *
 task_lst_get_task(TaskLst list, int i)
 {
 	Task *ptr;
-	
+
 	for (ptr = list.first; i > 0; ptr = ptr->next) {
 		if (ptr == NULL) /* We're out of bounds */
 			return NULL;
@@ -132,7 +132,7 @@ task_lst_edit_task(TaskLst *list, int i, const char *newstr)
 
 	if ((edit = task_lst_get_task(*list, i)) == NULL)
 		return -1;
-	
+
 	strncpy(edit->tdesc, newstr, TASK_LST_DESC_MAX_SIZE);
 
 	return 0;
@@ -169,7 +169,7 @@ task_lst_read_from_file(TaskLst *list, FILE *fp)
 	int stat_buf;
 	char *ptr, *endptr;
 	char linebuf[TASK_LST_DESC_MAX_SIZE];
-	
+
 	task_lst_init(list);
 
 	if (fscanf(fp, "%" SCNd64 "\n", &list->expiry) <= 0)
