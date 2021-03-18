@@ -114,9 +114,11 @@ print_task_list(TaskLst list)
 static void
 print_counter(TaskLst list)
 {
-	printf_color(task_todo_color, "%d", task_lst_count_todo(list));
+	printf_color(task_todo_color, "%d", 
+	             task_lst_count_status(list, TASK_TODO));
 	printf("/");
-	printf_color(task_done_color, "%d", task_lst_count_done(list));
+	printf_color(task_done_color, "%d", 
+	             task_lst_count_status(list, TASK_DONE));
 }
 
 static void

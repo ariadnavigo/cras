@@ -8,22 +8,7 @@
 
 #include "tasklst.h"
 
-static int task_lst_count_status(TaskLst list, int status);
 static Task *task_lst_get_last_task(TaskLst list);
-
-static int
-task_lst_count_status(TaskLst list, int status)
-{
-	int total;
-	Task *ptr;
-
-	for (ptr = list.first, total = 0; ptr != NULL; ptr = ptr->next) {
-		if (ptr->status == status)
-			++total;
-	}
-
-	return total;
-}
 
 static Task *
 task_lst_get_last_task(TaskLst list)
@@ -75,15 +60,17 @@ task_lst_expired(TaskLst list)
 }
 
 int
-task_lst_count_todo(TaskLst list)
+task_lst_count_status(TaskLst list, int status)
 {
-	return task_lst_count_status(list, TASK_TODO);
-}
+	int total;
+	Task *ptr;
 
-int
-task_lst_count_done(TaskLst list)
-{
-	return task_lst_count_status(list, TASK_DONE);
+	for (ptr = list.first, total = 0; ptr != NULL; ptr = ptr->next) {
+		if (ptr->status == status)
+			++total;
+	}
+
+	return total;
 }
 
 Task *
