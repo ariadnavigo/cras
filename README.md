@@ -13,14 +13,14 @@ Build by using:
 $ make
 ```
 
-Customize the build process by changing config.mk to suit your needs.
+Customize the build process by changing ``config.mk`` to suit your needs.
 
-User configuration is performed by modifying config.h. A set of defaults is 
-provided in config.def.h.
+User configuration is performed by modifying ``config.h``. A set of defaults is 
+provided in ``config.def.h``.
 
 ## Usage
 cras reads a task list from a file that is passed as an argument through the 
-command line. Alternatively, you may export the ```CRAS_DEF_FILE``` variable
+command line. Alternatively, you may export the ``CRAS_DEF_FILE`` variable
 to set a default file to operate with. 
 
 With no further options added, the default behavior is to output the pending 
