@@ -57,9 +57,9 @@ You may install cras by running the following command as root:
 # make install
 ```
 
-This will install the binary under $PREFIX/bin, as defined by your environment,
-or /usr/local/bin by default. The Makefile supports the $DESTDIR variable as 
-well.
+This will install the binary under ``$PREFIX/bin``, as defined by your 
+environment, or ``/usr/local/bin`` by default. The Makefile supports the 
+``$DESTDIR`` variable as well.
 
 ## Cultural trivia
 _cras_ means 'tomorrow' in Latin, hence the English word _procrastination_ 
@@ -76,5 +76,5 @@ subscribe to the low-volume
 [cras-announce](https://lists.sr.ht/~arivigo/cras-announce) mailing list!
 
 ## License
-cras is published under an MIT/X11/Expat-type License. See LICENSE file for 
+cras is published under an MIT/X11/Expat-type License. See ``LICENSE`` file for 
 copyright and license details.
