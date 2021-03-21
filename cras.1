@@ -11,9 +11,54 @@ cras - The Anti-Procrastination Tool
 .RB [ file ]
 .SH DESCRIPTION
 .PP
-cras is an unapologetic daily task planner and manager for your terminal and WM
-status bar. It holds your tasks only for a limited amount of time (24 hours, by
-default).
+.B cras 
+is an unapologetic daily task planner and manager for your terminal and WM
+status bar. It holds your tasks only for a limited amount of time, as defined
+when compiling the program.
+.PP
+To set up a new task list, call 
+.B cras 
+using the 
+.I \-n 
+option. 
+.B cras 
+will read each new line from standard input as a new task, until EOF is 
+reached. Add new tasks to an already existing file using 
+.I \-a.
+.PP
+The newly created task list will be readable by 
+.B cras 
+only up to the expiry date. Use 
+.I \-t 
+to mark a task as done and 
+.I \-T 
+to mark it back as pending.
+.PP
+You may delete tasks by using the 
+.I \-d 
+option followed by its identifying number.
+You may similarly edit the description of a task by using the 
+.I \-e 
+option. If you want to set the whole file as already expired, you may do so by 
+using the 
+.I \-i 
+option.
+.PP
+Running 
+.B cras 
+with no options outputs the task list. For just a counter of tasks pending and 
+done, pass the 
+.I \-o 
+option to 
+.B cras. 
+The 
+.I \-O 
+option extends the counter with the description shown in the default output 
+mode. These two modes are especially suited for integrating 
+.B cras 
+into scripts or WM status bars. Using 
+.I \-l 
+will print only the list of tasks.
 .SH OPTIONS
 .TP
 .B \-a
@@ -61,45 +106,112 @@ as pending.
 .TP
 .B \-v
 Show version information and exit.
-.SH USAGE
+.SH ENVIRONMENT
 .PP
-To set up a new task list, call cras using the -n option. cras will read each 
-new line from standard input as a new task, until EOF is reached. Add new tasks
-to an already existing file using -a.
-.PP
-The newly created task list will be readable by cras only up to the expiry
-date, which under the default configuration is 24 hours after originally saving
-it. Use -t to mark a task as done and -T to mark it back as pending.
-.PP
-You may delete tasks by using the -d option followed by its identifying number.
-You may similarly edit the description of a task by using the -e option. If you
-want to set the whole file as already expired, you may do so by using the -i 
-option.
-.PP
-Running cras with no options outputs the task list. For just a counter of 
-tasks pending and done, pass the -o flag to cras. The -O flag extends the 
-counter with the description shown in the default output mode. These two modes
-are especially suited for integrating cras into scripts or WM status bars.
-Using -l will print only the list of tasks.
-.SH ENVIRONMENT VARIABLES
-.PP
-Execution of cras is affected by the following environment variables:
+Execution of 
+.B cras 
+is affected by the following environment variables:
 .TP
 .B CRAS_DEF_FILE
-Sets a default file location that cras opens if run without a
+Sets a default file location that 
+.B cras 
+opens if run without a
 .I file
 argument. 
 .TP
 .B NO_COLOR
 Setting it to any value disables ANSI color escapes on output.
-.SH CONFIGURATION
+.SH EXAMPLES
+.SS Task list operations
 .PP
-cras is configured by creating a custom 
-.B config.h 
-and recompiling the source code.
-.SH LICENSE
+To set a task list up:
 .PP
-cras is published under an MIT/X11/Expat-type License. See 
-.B LICENSE 
-file in the source tarball for copyright and license details.
-
+.nf
+.RS
+.B "$ cras -n my-todo"
+.br
+.B "This is a test"
+.br
+.B "Writing a manpage"
+.br
+.B "For cras"
+.RE
+.fi
+.PP
+Checking a task list file:
+.PP
+.nf
+.RS
+.B "$ cras my-todo"
+.br
+Due date: Mon Mar 22 14:03:46 2021
+.sp 2
+#01 [TODO] This is a test
+.br
+#02 [TODO] Writing my manpage
+.br
+#03 [TODO] For cras
+.sp 2
+3/0 to do/done
+.RE
+.fi
+.PP
+Appending new entries:
+.PP
+.nf
+.RS
+.B "$ cras -a my-todo"
+.br
+.B "New entry"
+.br
+.B "$ cras my-todo"
+.br
+Due date: Mon Mar 22 14:03:46 2021
+.sp 2
+#01 [TODO] This is a test
+.br
+#02 [TODO] Writing my manpage
+.br
+#03 [TODO] For cras
+.br
+#04 [TODO] New entry
+.sp 2
+4/0 to do/done
+.RE
+.fi
+.PP
+To force a task list to expire:
+.PP
+.nf
+.RS
+.B "$ cras -i my-todo"
+.RE
+.fi
+.SS Manipulating entries
+.PP
+Editing and deleting individual tasks:
+.PP
+.nf
+.RS
+.B "$ cras -e 1 my-todo"
+.br
+.B "New text for entry 1"
+.br
+.B "$ cras -d 2 my-todo"
+.RE
+.fi
+.PP
+To mark a task as done or back to not done, respectively:
+.PP
+.nf
+.RS
+.B "$ cras -t 1 my-todo"
+.br
+#01 [DONE] Rewrite cras manpage
+.br
+.B "$ cras -T 1 my-todo"
+#01 [TODO] Rewrite cras manpage
+.RE
+.fi
+.SH SEE ALSO
+None.
