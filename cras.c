@@ -129,14 +129,14 @@ read_file(TaskLst *list, const char *fname)
 
 	fp = fopen(fname, "r");
 	if (fp == NULL)
-		die("Could not read from %s: %s", fname, strerror(errno));
+		die("Could not read %s: %s.", fname, strerror(errno));
 
 	read_stat = task_lst_read_from_file(list, fp);
 	fclose(fp);
 
 	if (read_stat < 0) {
 		task_lst_cleanup(list);
-		die("Parsing error: task file corrupted.");
+		die("%s: not a cras file.", fname);
 	}
 
 	if (task_lst_expired(*list) > 0) {
