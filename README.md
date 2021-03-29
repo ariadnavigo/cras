@@ -33,8 +33,8 @@ environment, or ``/usr/local/bin`` by default. The Makefile supports the
 
 ## Cultural trivia
 
-_cras_ means 'tomorrow' in Latin, hence the English word _procrastination_ 
-means, literally, 'the act of posponing things for tomorrow.'
+_cras_ means 'tomorrow' in Latin. For instance, the English word 
+_procrastination_ means, literally, 'the act of posponing things for tomorrow.'
 
 ## Contributing
 
