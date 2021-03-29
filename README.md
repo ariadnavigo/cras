@@ -5,6 +5,7 @@ status bar. It holds your tasks only for a limited amount of time (24 hours, by
 default).
 
 ## Build
+
 cras doesn't require any external dependencies.
 
 Build by using:
@@ -19,6 +20,7 @@ User configuration is performed by modifying ``config.h``. A set of defaults is
 provided in ``config.def.h``.
 
 ## Install
+
 You may install cras by running the following command as root:
 
 ```
@@ -30,6 +32,7 @@ environment, or ``/usr/local/bin`` by default. The Makefile supports the
 ``$DESTDIR`` variable as well.
 
 ## Cultural trivia
+
 _cras_ means 'tomorrow' in Latin, hence the English word _procrastination_ 
 means, literally, 'the act of posponing things for tomorrow.'
 
@@ -44,5 +47,6 @@ subscribe to the low-volume
 [cras-announce](https://lists.sr.ht/~arivigo/cras-announce) mailing list!
 
 ## License
+
 cras is published under an MIT/X11/Expat-type License. See ``LICENSE`` file for 
 copyright and license details.
