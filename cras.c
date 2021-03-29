@@ -238,11 +238,17 @@ edit_mode(const char *fname, const char *id)
 {
 	int tasknum;
 	TaskLst list;
+	Task *task;
 	char newstr[TASK_LST_DESC_MAX_SIZE];
 
 	tasknum = parse_tasknum(id);
 
 	read_file(&list, fname);
+
+	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL) {
+		task_lst_cleanup(&list);
+		die(TASK_NONEXIST_MSG, tasknum);
+	}
 
 	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
 	if (newstr[strlen(newstr) - 1] == '\n')
