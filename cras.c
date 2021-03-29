@@ -253,11 +253,8 @@ edit_mode(const char *fname, const char *id)
 	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
 	if (newstr[strlen(newstr) - 1] == '\n')
 		newstr[strlen(newstr) - 1] = '\0';
+	strncpy(task->tdesc, newstr, TASK_LST_DESC_MAX_SIZE);
 
-	if (task_lst_edit_task(&list, tasknum - 1, newstr) < 0) {
-		task_lst_cleanup(&list);
-		die(TASK_NONEXIST_MSG, tasknum);
-	}
 	write_file(fname, list);
 
 	task_lst_cleanup(&list);
