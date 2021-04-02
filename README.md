@@ -6,7 +6,10 @@ default).
 
 ## Build
 
-cras doesn't require any external dependencies.
+cras requires:
+
+1. A POSIX-like system
+2. A C99 compiler
 
 Build by using:
 
