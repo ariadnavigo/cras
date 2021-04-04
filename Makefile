@@ -4,7 +4,7 @@
 
 include config.mk
 
-SRC = cras.c tasklst.c
+SRC = cras.c strlcpy.c tasklst.c
 OBJ = ${SRC:%.c=%.o}
 
 all: options cras
@@ -22,9 +22,9 @@ config.h:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-cras.o: arg.h config.h tasklst.h
+cras.o: arg.h config.h strlcpy.h tasklst.h
 
-tasklst.o: tasklst.h
+tasklst.o: strlcpy.h tasklst.h
 
 ${OBJ}: config.mk
 
@@ -37,7 +37,7 @@ clean:
 dist: clean
 	mkdir -p cras-${VERSION}
 	cp -R LICENSE Makefile README.md arg.h config.def.h config.mk cras.1 \
-		tasklst.h ${SRC} cras-${VERSION}
+	   strlcpy.h tasklst.h ${SRC} cras-${VERSION}
 	tar -cf cras-${VERSION}.tar cras-${VERSION}
 	gzip cras-${VERSION}.tar
 	rm -rf cras-${VERSION}
@@ -47,8 +47,8 @@ install: all
 	cp -f cras ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/cras
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" cras.1\
-		> ${DESTDIR}${MANPREFIX}/man1/cras.1
+	sed "s/VERSION/${VERSION}/g" cras.1 \
+	    > ${DESTDIR}${MANPREFIX}/man1/cras.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/cras.1
 
 uninstall:

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "strlcpy.h"
 #include "tasklst.h"
 
 static Task *task_lst_get_last_task(TaskLst list);
@@ -25,6 +26,18 @@ task_lst_get_last_task(TaskLst list)
 	}
 
 	return ptr;
+}
+
+size_t
+task_set_tdesc(Task *task, const char *str)
+{
+	size_t retval;
+
+	retval = strlcpy(task->tdesc, str, TASK_TDESC_SIZE);
+	if (task->tdesc[strlen(task->tdesc) - 1] == '\n')
+		task->tdesc[strlen(task->tdesc) - 1] = '\0';
+
+	return retval;
 }
 
 void
@@ -98,7 +111,7 @@ task_lst_add_task(TaskLst *list, int status, const char *str)
 		return -1;
 
 	newtask->status = status;
-	strncpy(newtask->tdesc, str, TASK_LST_DESC_MAX_SIZE);
+	task_set_tdesc(newtask, str);
 
 	last = task_lst_get_last_task(*list);
 	if (last == NULL)
@@ -142,7 +155,7 @@ task_lst_read_from_file(TaskLst *list, FILE *fp)
 {
 	int stat_buf;
 	char *ptr, *endptr;
-	char linebuf[TASK_LST_DESC_MAX_SIZE];
+	char linebuf[TASK_LST_BUF_SIZE];
 
 	task_lst_init(list);
 
@@ -150,7 +163,7 @@ task_lst_read_from_file(TaskLst *list, FILE *fp)
 		return -1;
 
 	while (feof(fp) == 0) {
-		if (fgets(linebuf, sizeof(linebuf), fp) == NULL)
+		if (fgets(linebuf, TASK_LST_BUF_SIZE, fp) == NULL)
 			break;
 
 		ptr = strtok(linebuf, "\t");

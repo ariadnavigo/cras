@@ -1,6 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
-#define TASK_LST_DESC_MAX_SIZE 64
+#define TASK_TDESC_SIZE 64
+
+/* Let's give buffers some breathing room, just to be sure. */
+#define TASK_LST_BUF_SIZE TASK_TDESC_SIZE + 10
 
 enum {
 	TASK_TODO,
@@ -12,7 +15,7 @@ struct TASK_ {
 	int status;
 	Task *prev;
 	Task *next;
-	char tdesc[TASK_LST_DESC_MAX_SIZE];
+	char tdesc[TASK_TDESC_SIZE];
 };
 
 typedef struct {
@@ -20,6 +23,7 @@ typedef struct {
 	Task *first;
 } TaskLst;
 
+size_t task_set_tdesc(Task *task, const char *str);
 void task_lst_init(TaskLst *list);
 void task_lst_cleanup(TaskLst *list);
 void task_lst_set_expiration(TaskLst *list, int64_t delta);

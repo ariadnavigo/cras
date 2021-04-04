@@ -11,6 +11,7 @@
 static char *argv0; /* Required here by arg.h */
 #include "arg.h"
 #include "config.h"
+#include "strlcpy.h"
 #include "tasklst.h"
 
 #define TASK_NONEXIST_MSG "Task #%d does not exist."
@@ -163,11 +164,11 @@ static int
 store_input(TaskLst *list, FILE *fp)
 {
 	int cnt;
-	char linebuf[TASK_LST_DESC_MAX_SIZE];
+	char linebuf[TASK_LST_BUF_SIZE];
 
 	cnt = 0;
 	while (feof(fp) == 0) {
-		if (fgets(linebuf, TASK_LST_DESC_MAX_SIZE, fp) == NULL)
+		if (fgets(linebuf, TASK_LST_BUF_SIZE, fp) == NULL)
 			break;
 
 		/* Chomp '\n' */
@@ -239,7 +240,7 @@ edit_mode(const char *fname, const char *id)
 	int tasknum;
 	TaskLst list;
 	Task *task;
-	char newstr[TASK_LST_DESC_MAX_SIZE];
+	char newstr[TASK_LST_BUF_SIZE];
 
 	tasknum = parse_tasknum(id);
 
@@ -250,10 +251,8 @@ edit_mode(const char *fname, const char *id)
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
 
-	fgets(newstr, TASK_LST_DESC_MAX_SIZE, stdin);
-	if (newstr[strlen(newstr) - 1] == '\n')
-		newstr[strlen(newstr) - 1] = '\0';
-	strncpy(task->tdesc, newstr, TASK_LST_DESC_MAX_SIZE);
+	fgets(newstr, TASK_LST_BUF_SIZE, stdin);
+	task_set_tdesc(task, newstr);
 
 	write_file(fname, list);
 
@@ -374,13 +373,13 @@ main(int argc, char *argv[])
 		if (mode != DEF_MODE)
 			usage();
 		mode = DLT_MODE;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'e':
 		if (mode != DEF_MODE)
 			usage();
 		mode = EDIT_MODE;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'i':
 		if (mode != DEF_MODE)
@@ -412,14 +411,14 @@ main(int argc, char *argv[])
 			usage();
 		mode = MARK_MODE;
 		task_value = TASK_DONE;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'T':
 		if (mode != DEF_MODE)
 			usage();
 		mode = MARK_MODE;
 		task_value = TASK_TODO;
-		strncpy(numarg, EARGF(usage()), NUMARG_SIZE);
+		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
 	case 'v':
 		die("cras %s", VERSION);
