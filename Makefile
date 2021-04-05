@@ -24,6 +24,8 @@ config.h:
 
 cras.o: arg.h config.h tasklst.h
 
+tasklst.o: tasklst.h
+
 ${OBJ}: config.mk
 
 cras: ${OBJ}
