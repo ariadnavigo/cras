@@ -72,11 +72,10 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 	const char *eff_color; /* "Effective color" */
 
 	/* NO_COLOR support (https://no-color.org/) */
-	if (getenv("NO_COLOR") != NULL) {
+	if (getenv("NO_COLOR") != NULL)
 		eff_color = NULL;
-	} else {
+	else
 		eff_color = ansi_color;
-	}
 
 	printf("%s", (eff_color != NULL) ? eff_color : "");
 	va_start(ap, fmt);
