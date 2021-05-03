@@ -43,7 +43,6 @@ task_set_tdesc(Task *task, const char *str)
 void
 task_lst_init(TaskLst *list)
 {
-	list->expiry = 0;
 	list->first = NULL;
 }
 
@@ -61,15 +60,34 @@ task_lst_cleanup(TaskLst *list)
 }
 
 void
-task_lst_set_expiration(TaskLst *list, int64_t delta)
+task_lst_set_date(TaskLst *list)
 {
-	list->expiry = time(NULL) + delta;
+	time_t utim;
+	struct tm *ltim;
+
+	utim = time(NULL);
+	ltim = localtime(&utim);
+	snprintf(list->date, TASK_DATE_SIZE, "%04d-%02d-%02d", 
+                 ltim->tm_year + 1900, ltim->tm_mon + 1, ltim->tm_mday);
 }
 
 int
-task_lst_expired(TaskLst list)
+task_lst_on_date(TaskLst list)
 {
-	return time(NULL) > list.expiry;
+	struct tm *ltim;
+	time_t utim;
+	int year, month, day;
+	
+	utim = time(NULL);
+	ltim = localtime(&utim);
+	sscanf(list.date, "%d-%d-%d", &year, &month, &day);
+
+	/* We are valid only if on the same day */
+	if ((year == ltim->tm_year + 1900) && (month == ltim->tm_mon + 1) 
+	    && (day == ltim->tm_mday))
+		return 0;
+	else
+		return -1;
 }
 
 int
@@ -159,7 +177,7 @@ task_lst_read_from_file(TaskLst *list, FILE *fp)
 
 	task_lst_init(list);
 
-	if (fscanf(fp, "%" SCNd64 "\n", &list->expiry) <= 0)
+	if (fscanf(fp, "%s\n", list->date) <= 0)
 		return -1;
 
 	while (feof(fp) == 0) {
@@ -189,7 +207,7 @@ task_lst_write_to_file(FILE *fp, TaskLst list)
 {
 	Task *ptr;
 
-	fprintf(fp, "%" PRId64 "\n", list.expiry);
+	fprintf(fp, "%s\n", list.date);
 
 	for (ptr = list.first; ptr != NULL; ptr = ptr->next)
 		fprintf(fp, "%d\t%s\n", ptr->status, ptr->tdesc);

@@ -139,7 +139,7 @@ read_file(TaskLst *list, const char *fname)
 		die("%s: not a cras file.", fname);
 	}
 
-	if (task_lst_expired(*list) > 0) {
+	if (task_lst_on_date(*list) < 0) {
 		task_lst_cleanup(list);
 		die("Due date passed.");
 	}
@@ -277,9 +277,9 @@ input_mode(const char *fname, int append)
 		task_lst_cleanup(&list);
 		die("Aborting: empty task list.");
 	} else {
-		/* Only set a new expiration date if creating a new file */
+		/* Only set a new date if creating a new file */
 		if (append == 0)
-			task_lst_set_expiration(&list, expiry_delta);
+			task_lst_set_date(&list);
 
 		write_file(fname, list);
 
@@ -294,7 +294,7 @@ inval_mode(const char *fname)
 
 	read_file(&list, fname);
 
-	task_lst_set_expiration(&list, 0);
+	memset(list.date, 0, TASK_DATE_SIZE);
 	write_file(fname, list);
 
 	task_lst_cleanup(&list);
@@ -343,7 +343,7 @@ output_mode(const char *fname, int mode)
 		print_task_list(list);
 	} else {
 		/* LONG_OUT_MODE */
-		printf("%s: %s\n", expire_str, ctime(&list.expiry));
+		printf("%s\n\n", list.date);
 		cnt = print_task_list(list);
 		if (cnt > 0)
 			putchar('\n');
