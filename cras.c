@@ -23,11 +23,8 @@ enum {
 	DLT_MODE,
 	EDIT_MODE,
 	INVAL_MODE,
-	LONG_OUT_MODE,
 	MARK_MODE,
 	NEW_MODE,
-	SHORT_DESC_OUT_MODE,
-	SHORT_OUT_MODE,
 	TASKS_OUT_MODE
 };
 
@@ -49,7 +46,7 @@ static void edit_mode(const char *fname, const char *id);
 static void input_mode(const char *fname, int append);
 static void inval_mode(const char *fname);
 static void mark_list_mode(const char *fname, const char *id, int value);
-static void output_mode(const char *fname, int mode);
+static void output_mode(const char *fname);
 
 static void
 die(const char *fmt, ...)
@@ -211,7 +208,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ailnoOv] [-detT num] [file]");
+	die("usage: cras [-ainv] [-detT num] [file]");
 }
 
 static void
@@ -326,30 +323,19 @@ mark_list_mode(const char *fname, const char *id, int value)
 }
 
 static void
-output_mode(const char *fname, int mode)
+output_mode(const char *fname)
 {
 	TaskLst list;
 	int cnt;
 
 	read_file(&list, fname);
 
-	if (mode == SHORT_OUT_MODE) {
-		print_counter(list);
+	printf("%s\n\n", list.date);
+	cnt = print_task_list(list);
+	if (cnt > 0)
 		putchar('\n');
-	} else if (mode == SHORT_DESC_OUT_MODE) {
-		print_counter(list);
-		printf(" %s\n", smmry_str);
-	} else if (mode == TASKS_OUT_MODE) {
-		print_task_list(list);
-	} else {
-		/* LONG_OUT_MODE */
-		printf("%s\n\n", list.date);
-		cnt = print_task_list(list);
-		if (cnt > 0)
-			putchar('\n');
-		print_counter(list);
-		printf(" %s\n", smmry_str);
-	}
+	print_counter(list);
+	printf(" %s\n", smmry_str);
 
 	task_lst_cleanup(&list);
 }
@@ -385,25 +371,10 @@ main(int argc, char *argv[])
 			usage();
 		mode = INVAL_MODE;
 		break;
-	case 'l':
-		if (mode != DEF_MODE)
-			usage();
-		mode = TASKS_OUT_MODE;
-		break;
 	case 'n':
 		if (mode != DEF_MODE)
 			usage();
 		mode = NEW_MODE;
-		break;
-	case 'o':
-		if (mode != DEF_MODE)
-			usage();
-		mode = SHORT_OUT_MODE;
-		break;
-	case 'O':
-		if (mode != DEF_MODE)
-			usage();
-		mode = SHORT_DESC_OUT_MODE;
 		break;
 	case 't':
 		if (mode != DEF_MODE)
@@ -453,12 +424,9 @@ main(int argc, char *argv[])
 		input_mode(fileptr, 0);
 		return 0;
 	default:
-		output_mode(fileptr, mode);
+		output_mode(fileptr);
 		return 0;
 	}
-
-	/* Default behavior: long-form output */
-	output_mode(fileptr, LONG_OUT_MODE);
 
 	return 0;
 }

@@ -5,7 +5,7 @@ cras \- The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-ailnoOv ]
+.RB [ \-ainv ]
 .RB [ \-detT 
 .IR num  ]
 .RB [ file ]
@@ -50,21 +50,6 @@ option.
 Running 
 .B cras 
 with no options outputs the task list. 
-For just a counter of tasks pending and done, 
-pass the 
-.I \-o 
-option to 
-.BR cras . 
-The 
-.I \-O 
-option extends the counter with the description shown in the default output 
-mode. 
-These two modes are especially suited for integrating 
-.B cras 
-into scripts or WM status bars. 
-Using
-.I \-l 
-will print only the list of tasks.
 .SH OPTIONS
 .TP
 .B \-a
@@ -83,19 +68,10 @@ Edit task
 Force expiration of
 .IR file .
 .TP
-.B \-l
-Only print the list of tasks.
-.TP
 .B \-n
 Create new
 .IR file ,
 overwriting previous contents if it already exists.
-.TP
-.B \-o
-Only print the counter of tasks pending and done.
-.TP
-.B \-O
-Only print counter+description.
 .TP
 .BI \-t " num"
 Mark task 
