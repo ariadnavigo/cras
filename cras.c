@@ -24,8 +24,7 @@ enum {
 	EDIT_MODE,
 	INVAL_MODE,
 	MARK_MODE,
-	NEW_MODE,
-	TASKS_OUT_MODE
+	NEW_MODE
 };
 
 /* Auxiliary functions */
