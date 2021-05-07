@@ -32,7 +32,6 @@ static void die(const char *fmt, ...);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(TaskLst list);
-static void print_counter(TaskLst list);
 static void read_file(TaskLst *list, const char *fname);
 static void write_file(const char *fname, TaskLst list);
 static int store_input(TaskLst *list, FILE *fp);
@@ -105,16 +104,6 @@ print_task_list(TaskLst list)
 	}
 
 	return i;
-}
-
-static void
-print_counter(TaskLst list)
-{
-	printf_color(task_todo_color, "%d", 
-	             task_lst_count_status(list, TASK_TODO));
-	printf("/");
-	printf_color(task_done_color, "%d", 
-	             task_lst_count_status(list, TASK_DONE));
 }
 
 static void
@@ -333,8 +322,6 @@ output_mode(const char *fname)
 	cnt = print_task_list(list);
 	if (cnt > 0)
 		putchar('\n');
-	print_counter(list);
-	printf(" %s\n", smmry_str);
 
 	task_lst_cleanup(&list);
 }

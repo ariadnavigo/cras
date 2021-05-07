@@ -29,7 +29,6 @@ void task_lst_init(TaskLst *list);
 void task_lst_cleanup(TaskLst *list);
 void task_lst_set_date(TaskLst *list);
 int task_lst_on_date(TaskLst list);
-int task_lst_count_status(TaskLst list, int status);
 Task *task_lst_get_task(TaskLst list, int i);
 int task_lst_add_task(TaskLst *list, int status, const char *str);
 int task_lst_del_task(TaskLst *list, int i);

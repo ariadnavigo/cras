@@ -90,20 +90,6 @@ task_lst_on_date(TaskLst list)
 		return -1;
 }
 
-int
-task_lst_count_status(TaskLst list, int status)
-{
-	int total;
-	Task *ptr;
-
-	for (ptr = list.first, total = 0; ptr != NULL; ptr = ptr->next) {
-		if (ptr->status == status)
-			++total;
-	}
-
-	return total;
-}
-
 Task *
 task_lst_get_task(TaskLst list, int i)
 {

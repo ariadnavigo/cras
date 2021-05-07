@@ -21,8 +21,3 @@ static const char task_done_str[] = "[DONE]";
  */
 static const char expire_str[] = "Due date";
 
-/*
- * smmry_str: Sets the description for the numbers in the last line in the 
- * default output mode.
- */
-static const char smmry_str[] = "to do/done";
