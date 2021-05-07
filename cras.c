@@ -22,7 +22,6 @@ enum {
 	DEF_MODE,
 	DLT_MODE,
 	EDIT_MODE,
-	INVAL_MODE,
 	MARK_MODE,
 	NEW_MODE
 };
@@ -42,7 +41,6 @@ static void usage(void);
 static void delete_mode(const char *fname, const char *id);
 static void edit_mode(const char *fname, const char *id);
 static void input_mode(const char *fname, int append);
-static void inval_mode(const char *fname);
 static void mark_list_mode(const char *fname, const char *id, int value);
 static void output_mode(const char *fname);
 
@@ -196,7 +194,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-ainv] [-detT num] [file]");
+	die("usage: cras [-anv] [-detT num] [file]");
 }
 
 static void
@@ -270,19 +268,6 @@ input_mode(const char *fname, int append)
 
 		task_lst_cleanup(&list);
 	}
-}
-
-static void
-inval_mode(const char *fname)
-{
-	TaskLst list;
-
-	read_file(&list, fname);
-
-	memset(list.date, 0, TASK_DATE_SIZE);
-	write_file(fname, list);
-
-	task_lst_cleanup(&list);
 }
 
 static void
@@ -396,9 +381,6 @@ main(int argc, char *argv[])
 		return 0;
 	case EDIT_MODE:
 		edit_mode(fileptr, numarg);
-		return 0;
-	case INVAL_MODE:
-		inval_mode(fileptr);
 		return 0;
 	case MARK_MODE:
 		mark_list_mode(fileptr, numarg, task_value);
