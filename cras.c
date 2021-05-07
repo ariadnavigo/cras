@@ -314,14 +314,11 @@ static void
 output_mode(const char *fname)
 {
 	TaskLst list;
-	int cnt;
 
 	read_file(&list, fname);
 
-	printf("%s\n\n", list.date);
-	cnt = print_task_list(list);
-	if (cnt > 0)
-		putchar('\n');
+	printf("%s\n", list.date);
+	print_task_list(list);
 
 	task_lst_cleanup(&list);
 }
