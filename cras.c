@@ -334,11 +334,6 @@ main(int argc, char *argv[])
 		mode = EDIT_MODE;
 		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
 		break;
-	case 'i':
-		if (mode != DEF_MODE)
-			usage();
-		mode = INVAL_MODE;
-		break;
 	case 'n':
 		if (mode != DEF_MODE)
 			usage();
