@@ -10,6 +10,7 @@
 static char *argv0; /* Required here by arg.h */
 #include "arg.h"
 #include "config.h"
+#include "date.h"
 #include "strlcpy.h"
 #include "tasklst.h"
 
@@ -39,7 +40,7 @@ static void usage(void);
 /* Execution modes */
 static void delete_mode(const char *fname, const char *id);
 static void edit_mode(const char *fname, const char *id);
-static void input_mode(const char *fname, int append);
+static void input_mode(const char *fname, const char *date, int append);
 static void mark_list_mode(const char *fname, const char *id, int value);
 static void output_mode(const char *fname);
 
@@ -241,7 +242,7 @@ edit_mode(const char *fname, const char *id)
 }
 
 static void
-input_mode(const char *fname, int append)
+input_mode(const char *fname, const char *date, int append)
 {
 	int task_num;
 	TaskLst list;
@@ -261,7 +262,7 @@ input_mode(const char *fname, int append)
 	} else {
 		/* Only set a new date if creating a new file */
 		if (append == 0)
-			task_lst_set_date(&list, NULL);
+			task_lst_set_date(&list, date);
 
 		write_file(fname, list);
 
@@ -310,11 +311,12 @@ output_mode(const char *fname)
 int
 main(int argc, char *argv[])
 {
-	char numarg[NUMARG_SIZE];
+	char numarg[NUMARG_SIZE], datearg[DATE_SIZE];
 	const char *fileptr;
-	int mode, task_value;
+	int mode, date_arg, task_value;
 
 	mode = DEF_MODE;
+	date_arg = 0;
 	ARGBEGIN {
 	case 'a':
 		if (mode != DEF_MODE)
@@ -337,6 +339,12 @@ main(int argc, char *argv[])
 		if (mode != DEF_MODE)
 			usage();
 		mode = NEW_MODE;
+		break;
+	case 's':
+		date_arg = 1;
+		strlcpy(datearg, EARGF(usage()), DATE_SIZE);
+		if (is_date(datearg) < 0)
+			die("Invalid date format.");
 		break;
 	case 't':
 		if (mode != DEF_MODE)
@@ -368,7 +376,7 @@ main(int argc, char *argv[])
 
 	switch (mode) {
 	case APP_MODE:
-		input_mode(fileptr, 1);
+		input_mode(fileptr, NULL, 1);
 		return 0;
 	case DLT_MODE:
 		delete_mode(fileptr, numarg);
@@ -380,7 +388,7 @@ main(int argc, char *argv[])
 		mark_list_mode(fileptr, numarg, task_value);
 		return 0;
 	case NEW_MODE:
-		input_mode(fileptr, 0);
+		input_mode(fileptr, (date_arg > 0) ? datearg : NULL, 0);
 		return 0;
 	default:
 		output_mode(fileptr);

@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-#define TASK_DATE_SIZE 11 /* Size of 'YYYY-MM-DD\0' */
 #define TASK_TDESC_SIZE 64
 
 /* Let's give buffers some breathing room, just to be sure. */
@@ -20,7 +19,7 @@ struct TASK_ {
 };
 
 typedef struct {
-	char date[TASK_DATE_SIZE];
+	char date[DATE_SIZE];
 	Task *first;
 } TaskLst;
 
