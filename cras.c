@@ -1,7 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <errno.h>
-#include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
