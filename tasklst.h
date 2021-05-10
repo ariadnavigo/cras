@@ -27,7 +27,7 @@ typedef struct {
 size_t task_set_tdesc(Task *task, const char *str);
 void task_lst_init(TaskLst *list);
 void task_lst_cleanup(TaskLst *list);
-void task_lst_set_date(TaskLst *list);
+void task_lst_set_date(TaskLst *list, const char *date);
 int task_lst_on_date(TaskLst list);
 Task *task_lst_get_task(TaskLst list, int i);
 int task_lst_add_task(TaskLst *list, int status, const char *str);

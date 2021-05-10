@@ -261,7 +261,7 @@ input_mode(const char *fname, int append)
 	} else {
 		/* Only set a new date if creating a new file */
 		if (append == 0)
-			task_lst_set_date(&list);
+			task_lst_set_date(&list, NULL);
 
 		write_file(fname, list);
 

@@ -59,15 +59,21 @@ task_lst_cleanup(TaskLst *list)
 }
 
 void
-task_lst_set_date(TaskLst *list)
+task_lst_set_date(TaskLst *list, const char *date)
 {
 	time_t utim;
 	struct tm *ltim;
 
-	utim = time(NULL);
-	ltim = localtime(&utim);
-	snprintf(list->date, TASK_DATE_SIZE, "%04d-%02d-%02d", 
-                 ltim->tm_year + 1900, ltim->tm_mon + 1, ltim->tm_mday);
+	/* Either we provide 'date' or we get today's date by default. */
+	if (date != NULL) {
+		strlcpy(list->date, date, TASK_DATE_SIZE);
+	} else {
+		utim = time(NULL);
+		ltim = localtime(&utim);
+		snprintf(list->date, TASK_DATE_SIZE, "%04d-%02d-%02d", 
+		         ltim->tm_year + 1900, ltim->tm_mon + 1, 
+		         ltim->tm_mday);
+	}
 }
 
 int
