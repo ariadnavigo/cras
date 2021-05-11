@@ -109,7 +109,7 @@ To set a task list up:
 .PP
 .nf
 .RS
-.RB $ " cras -n my-todo"
+.RB $ " cras \-n my-todo"
 .br
 .B "This is a test"
 .br
@@ -124,7 +124,7 @@ To set a task list up for a specific date
 .PP
 .nf
 .RS
-.RB $ " cras -n my-todo -w 2021-05-14"
+.RB $ " cras \-n my-todo \-w 2021-05-14"
 .RE
 .fi
 .PP
@@ -150,7 +150,7 @@ Appending new entries:
 .PP
 .nf
 .RS
-.RB $ " cras -a my-todo"
+.RB $ " cras \-a my-todo"
 .br
 .B "New entry"
 .br
@@ -183,11 +183,11 @@ Editing and deleting individual tasks:
 .PP
 .nf
 .RS
-.RB $ " cras -e 1 my-todo"
+.RB $ " cras \-e 1 my-todo"
 .br
 .B "New text for entry 1"
 .br
-.RB $ " cras -d 2 my-todo"
+.RB $ " cras \-d 2 my-todo"
 .RE
 .fi
 .PP
@@ -195,11 +195,11 @@ To mark a task as done or back to not done, respectively:
 .PP
 .nf
 .RS
-.RB $ " cras -t 1 my-todo"
+.RB $ " cras \-t 1 my-todo"
 .br
 #01 [DONE] Rewrite cras manpage
 .br
-.RB $ " cras -T 1 my-todo"
+.RB $ " cras \-T 1 my-todo"
 #01 [TODO] Rewrite cras manpage
 .RE
 .fi
