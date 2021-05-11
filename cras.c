@@ -109,6 +109,7 @@ read_file(TaskLst *list, const char *fname)
 {
 	int read_stat;
 	FILE *fp;
+	char date_buf[DATE_SIZE];
 
 	fp = fopen(fname, "r");
 	if (fp == NULL)
@@ -123,8 +124,9 @@ read_file(TaskLst *list, const char *fname)
 	}
 
 	if (task_lst_on_date(*list) < 0) {
+		strlcpy(date_buf, list->date, DATE_SIZE);
 		task_lst_cleanup(list);
-		die("Due date passed.");
+		die("%s: valid on %s.", fname, date_buf);
 	}
 }
 
