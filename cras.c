@@ -196,7 +196,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-anv] [-detT num] [-s date] [file]");
+	die("usage: cras [-anv] [-detT num] [-w date] [file]");
 }
 
 static void
@@ -342,12 +342,6 @@ main(int argc, char *argv[])
 			usage();
 		mode = NEW_MODE;
 		break;
-	case 's':
-		date_arg = 1;
-		strlcpy(datearg, EARGF(usage()), DATE_SIZE);
-		if (is_date(datearg) < 0)
-			die("Invalid date format.");
-		break;
 	case 't':
 		if (mode != DEF_MODE)
 			usage();
@@ -364,6 +358,12 @@ main(int argc, char *argv[])
 		break;
 	case 'v':
 		die("cras %s", VERSION);
+		break;
+	case 'w':
+		date_arg = 1;
+		strlcpy(datearg, EARGF(usage()), DATE_SIZE);
+		if (is_date(datearg) < 0)
+			die("Invalid date format.");
 		break;
 	default:
 		usage(); /* usage() dies, so nothing else needed. */

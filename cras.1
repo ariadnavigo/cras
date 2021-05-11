@@ -8,7 +8,7 @@ cras \- The Anti-Procrastination Tool
 .RB [ \-anv ]
 .RB [ \-detT 
 .IR num  ]
-.RB [ \-s
+.RB [ \-w
 .IR date ]
 .RB [ file ]
 .SH DESCRIPTION
@@ -33,7 +33,7 @@ By default, the newly created task list will be readable by
 .B cras 
 only throughout the day saved on the list.
 Alternatively, you may set the date for a task list file by using
-.I \-s
+.I \-w
 and providing a date in YYYY-MM-DD format (ISO 8601 extended.)
 Use 
 .I \-t 
@@ -70,11 +70,6 @@ Create new
 .IR file ,
 overwriting previous contents if it already exists.
 .TP
-.BI \-s " date"
-Set the task file to be valid only on
-.IR date ,
-represented in YYYY-MM-DD format (ISO 8601 extended.)
-.TP
 .BI \-t " num"
 Mark task 
 .I num 
@@ -87,6 +82,11 @@ as pending.
 .TP
 .B \-v
 Show version information and exit.
+.TP
+.BI \-w " date"
+Set the task file to be valid only on
+.IR date ,
+represented in YYYY-MM-DD format (ISO 8601 extended.)
 .SH ENVIRONMENT
 .PP
 Execution of 
@@ -124,7 +124,7 @@ To set a task list up for a specific date
 .PP
 .nf
 .RS
-.RB $ " cras -n my-todo -s 2021-05-14"
+.RB $ " cras -n my-todo -w 2021-05-14"
 .RE
 .fi
 .PP
