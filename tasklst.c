@@ -62,15 +62,10 @@ task_lst_cleanup(TaskLst *list)
 void
 task_lst_set_date(TaskLst *list, const char *date)
 {
-	time_t utim;
+	if (date == NULL)
+		date = date_str(time(NULL));
 
-	/* Either we provide 'date' or we get today's date by default. */
-	if (date != NULL) {
-		strlcpy(list->date, date, DATE_SIZE);
-	} else {
-		utim = time(NULL);
-		strlcpy(list->date, date_str(utim), DATE_SIZE);
-	}
+	strlcpy(list->date, date, DATE_SIZE);
 }
 
 int
