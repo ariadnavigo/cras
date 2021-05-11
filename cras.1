@@ -8,6 +8,8 @@ cras \- The Anti-Procrastination Tool
 .RB [ \-anv ]
 .RB [ \-detT 
 .IR num  ]
+.RB [ \-s
+.IR date ]
 .RB [ file ]
 .SH DESCRIPTION
 .PP
@@ -27,9 +29,12 @@ until EOF is reached.
 Add new tasks to an already existing file using 
 .IR \-a .
 .PP
-The newly created task list will be readable by 
+By default, the newly created task list will be readable by 
 .B cras 
 only throughout the day saved on the list.
+Alternatively, you may set the date for a task list file by using
+.I \-s
+and providing a date in YYYY-MM-DD format (ISO 8601 extended.)
 Use 
 .I \-t 
 to mark a task as done and 
@@ -64,6 +69,11 @@ Edit task
 Create new
 .IR file ,
 overwriting previous contents if it already exists.
+.TP
+.BI \-s " date"
+Set the task file to be valid only on
+.IR date ,
+represented in YYYY-MM-DD format (ISO 8601 extended.)
 .TP
 .BI \-t " num"
 Mark task 
@@ -106,6 +116,15 @@ To set a task list up:
 .B "Writing a manpage"
 .br
 .B "For cras"
+.RE
+.fi
+.PP
+To set a task list up for a specific date
+(e.g. 2021-05-14):
+.PP
+.nf
+.RS
+.RB $ " cras -n my-todo -s 2021-05-14"
 .RE
 .fi
 .PP

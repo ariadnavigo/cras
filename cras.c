@@ -196,7 +196,7 @@ parse_tasknum(const char *id)
 static void
 usage(void)
 {
-	die("usage: cras [-anv] [-detT num] [file]");
+	die("usage: cras [-anv] [-detT num] [-s date] [file]");
 }
 
 static void
