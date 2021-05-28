@@ -7,8 +7,6 @@
 #include <string.h>
 #include <time.h>
 
-static char *argv0; /* Required here by arg.h */
-#include "arg.h"
 #include "config.h"
 #include "date.h"
 #include "strlcpy.h"
@@ -315,59 +313,61 @@ main(int argc, char *argv[])
 {
 	char numarg[NUMARG_SIZE], datearg[DATE_SIZE];
 	const char *fileptr;
-	int mode, date_arg, task_value;
+	int opt, mode, date_arg, task_value;
 
 	mode = DEF_MODE;
 	date_arg = 0;
-	ARGBEGIN {
-	case 'a':
-		if (mode != DEF_MODE)
-			usage();
-		mode = APP_MODE;
-		break;
-	case 'd':
-		if (mode != DEF_MODE)
-			usage();
-		mode = DLT_MODE;
-		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
-	case 'e':
-		if (mode != DEF_MODE)
-			usage();
-		mode = EDIT_MODE;
-		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
-	case 'n':
-		if (mode != DEF_MODE)
-			usage();
-		mode = NEW_MODE;
-		break;
-	case 't':
-		if (mode != DEF_MODE)
-			usage();
-		mode = MARK_MODE;
-		task_value = TASK_DONE;
-		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
-	case 'T':
-		if (mode != DEF_MODE)
-			usage();
-		mode = MARK_MODE;
-		task_value = TASK_TODO;
-		strlcpy(numarg, EARGF(usage()), NUMARG_SIZE);
-		break;
-	case 'v':
-		die("cras %s", VERSION);
-		break;
-	case 'w':
-		date_arg = 1;
-		strlcpy(datearg, EARGF(usage()), DATE_SIZE);
-		if (is_date(datearg) < 0)
-			die("Invalid date format.");
-		break;
-	default:
-		usage(); /* usage() dies, so nothing else needed. */
-	} ARGEND;
+	while ((opt = getopt(argc, argv, ":anvd:e:t:T:w:")) != -1) {
+		switch (opt) {
+		case 'a':
+			if (mode != DEF_MODE)
+				usage();
+			mode = APP_MODE;
+			break;
+		case 'n':
+			if (mode != DEF_MODE)
+				usage();
+			mode = NEW_MODE;
+			break;
+		case 'v':
+			die("cras %s", VERSION);
+			break;
+		case 'd':
+			if (mode != DEF_MODE)
+				usage();
+			mode = DLT_MODE;
+			strlcpy(numarg, optarg, NUMARG_SIZE);
+			break;
+		case 'e':
+			if (mode != DEF_MODE)
+				usage();
+			mode = EDIT_MODE;
+			strlcpy(numarg, optarg, NUMARG_SIZE);
+			break;
+		case 't':
+			if (mode != DEF_MODE)
+				usage();
+			mode = MARK_MODE;
+			task_value = TASK_DONE;
+			strlcpy(numarg, optarg, NUMARG_SIZE);
+			break;
+		case 'T':
+			if (mode != DEF_MODE)
+				usage();
+			mode = MARK_MODE;
+			task_value = TASK_TODO;
+			strlcpy(numarg, optarg, NUMARG_SIZE);
+			break;
+		case 'w':
+			date_arg = 1;
+			strlcpy(datearg, optarg, DATE_SIZE);
+			if (is_date(datearg) < 0)
+				die("Invalid date format.");
+			break;
+		default:
+			usage(); /* usage() dies, so nothing else needed. */
+		}
+	}
 
 	if (argc <= 0) {
 		if ((fileptr = getenv("CRAS_DEF_FILE")) == NULL)
