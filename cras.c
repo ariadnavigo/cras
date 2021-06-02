@@ -370,11 +370,11 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (argc <= 0) {
+	if (optind >= argc) {
 		if ((fileptr = getenv("CRAS_DEF_FILE")) == NULL)
 			die("CRAS_DEF_FILE environment variable not set.");
 	} else {
-		fileptr = argv[0];
+		fileptr = argv[optind];
 	}
 
 	switch (mode) {
