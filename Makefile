@@ -22,7 +22,7 @@ config.h:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-cras.o: arg.h config.h date.h strlcpy.h tasklst.h
+cras.o: config.h date.h strlcpy.h tasklst.h
 
 tasklst.o: date.h strlcpy.h tasklst.h
 
