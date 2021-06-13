@@ -19,9 +19,6 @@ options:
 config.h:
 	cp config.def.h $@
 
-.c.o:
-	${CC} -c ${CFLAGS} $<
-
 cras.o: config.h date.h strlcpy.h tasklst.h
 
 tasklst.o: date.h strlcpy.h tasklst.h
