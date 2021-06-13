@@ -11,9 +11,10 @@ all: options cras
 
 options:
 	@echo Build options:
-	@echo "CFLAGS 	= ${CFLAGS}"
-	@echo "LDFLAGS	= ${LDFLAGS}"
-	@echo "CC	= ${CC}"
+	@echo "CPPFLAGS = ${CPPFLAGS}"
+	@echo "CFLAGS   = ${CFLAGS}"
+	@echo "LDFLAGS  = ${LDFLAGS}"
+	@echo "CC       = ${CC}"
 	@echo
 
 config.h:
