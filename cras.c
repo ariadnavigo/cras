@@ -393,7 +393,7 @@ main(int argc, char *argv[])
 		mark_list_mode(fileptr, numarg, task_value);
 		return 0;
 	case NEW_MODE:
-		input_mode(fileptr, (date > 0) ? datearg : NULL, 0);
+		input_mode(fileptr, date > 0 ? datearg : NULL, 0);
 		return 0;
 	default:
 		output_mode(fileptr);
