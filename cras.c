@@ -312,12 +312,14 @@ output_mode(const char *fname)
 int
 main(int argc, char *argv[])
 {
-	char numarg[NUMARG_SIZE], datearg[DATE_SIZE];
+	char *numarg, *datearg;
 	const char *fileptr;
-	int opt, mode, date_arg, task_value;
+	int opt, mode, date, task_value;
 
 	mode = DEF_MODE;
-	date_arg = 0;
+	numarg = NULL;
+	datearg = NULL;
+	date = 0;
 	while ((opt = getopt(argc, argv, ":anvd:e:t:T:w:")) != -1) {
 		switch (opt) {
 		case 'a':
@@ -337,31 +339,31 @@ main(int argc, char *argv[])
 			if (mode != DEF_MODE)
 				usage();
 			mode = DLT_MODE;
-			strlcpy(numarg, optarg, NUMARG_SIZE);
+			numarg = optarg;
 			break;
 		case 'e':
 			if (mode != DEF_MODE)
 				usage();
 			mode = EDIT_MODE;
-			strlcpy(numarg, optarg, NUMARG_SIZE);
+			numarg = optarg;
 			break;
 		case 't':
 			if (mode != DEF_MODE)
 				usage();
 			mode = MARK_MODE;
 			task_value = TASK_DONE;
-			strlcpy(numarg, optarg, NUMARG_SIZE);
+			numarg = optarg;
 			break;
 		case 'T':
 			if (mode != DEF_MODE)
 				usage();
 			mode = MARK_MODE;
 			task_value = TASK_TODO;
-			strlcpy(numarg, optarg, NUMARG_SIZE);
+			numarg = optarg;
 			break;
 		case 'w':
-			date_arg = 1;
-			strlcpy(datearg, optarg, DATE_SIZE);
+			date = 1;
+			datearg = optarg;
 			if (is_date(datearg) < 0)
 				die("Invalid date format.");
 			break;
@@ -391,7 +393,7 @@ main(int argc, char *argv[])
 		mark_list_mode(fileptr, numarg, task_value);
 		return 0;
 	case NEW_MODE:
-		input_mode(fileptr, (date_arg > 0) ? datearg : NULL, 0);
+		input_mode(fileptr, (date > 0) ? datearg : NULL, 0);
 		return 0;
 	default:
 		output_mode(fileptr);
