@@ -45,7 +45,7 @@ is_date(const char *str)
 
 	if (ybuf % 400 == 0)
 		leap = 1;
-	else if ((ybuf % 4 == 0) && (ybuf % 100 != 0))
+	else if (ybuf % 4 == 0 && ybuf % 100 != 0)
 		leap = 1;
 	else
 		leap = 0;
@@ -62,7 +62,7 @@ is_date(const char *str)
 	if (endptr[0] != '\0')
 		return -1;
 
-	if ((mbuf < 1) || (mbuf > 12))
+	if (mbuf < 1 || mbuf > 12)
 		return -1;
 
 	/* Day */
@@ -79,16 +79,15 @@ is_date(const char *str)
 
 	if (dbuf < 0)
 		return -1;
-	if ((leap > 0) && (mbuf == 2) && (dbuf == 29))
+	if (leap > 0 && mbuf == 2 && dbuf == 29)
 		return 0;
-	else if ((leap == 0) && (mbuf == 2) && (dbuf > 28))
+	else if (leap == 0 && mbuf == 2 && dbuf > 28)
 		return -1;
-	else if (((mbuf == 1) || (mbuf == 3) || (mbuf == 5) || (mbuf == 7)
-	          || (mbuf == 8) || (mbuf == 10) || (mbuf == 12))
-	         && (dbuf > 31))
+	else if ((mbuf == 1 || mbuf == 3 || mbuf == 5 || mbuf == 7 || mbuf == 8
+	          || mbuf == 10 || mbuf == 12) && dbuf > 31)
 		return -1;
-	else if (((mbuf == 4) || (mbuf == 6) || (mbuf == 9) || (mbuf == 11))
-	         && (dbuf > 30))
+	else if ((mbuf == 4 || mbuf == 6 || mbuf == 9 || mbuf == 11)
+	         && dbuf > 30)
 		return -1;
 	else
 		return 0;

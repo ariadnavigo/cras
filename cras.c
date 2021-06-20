@@ -69,12 +69,12 @@ printf_color(const char *ansi_color, const char *fmt, ...)
 	else
 		eff_color = ansi_color;
 
-	printf("%s", (eff_color != NULL) ? eff_color : "");
+	printf("%s", eff_color != NULL ? eff_color : "");
 	va_start(ap, fmt);
 	vprintf(fmt, ap);
 	va_end(ap);
 
-	printf("%s", (eff_color != NULL) ? "\033[0m" : "");
+	printf("%s", eff_color != NULL ? "\033[0m" : "");
 }
 
 static void
