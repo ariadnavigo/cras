@@ -158,11 +158,11 @@ store_input(TaskLst *list, FILE *fp)
 		if (linebuf[strlen(linebuf) - 1] == '\n')
 			linebuf[strlen(linebuf) - 1] = '\0';
 
-		/* 
+		/*
 		 * Ignoring blank lines so that the file doesn't get corrupted
-		 * by one. We calculate strlen(linebuf) again because we 
-		 * *might* have chomped '\n' or not. Storing the size 
-		 * beforehand is not a viable optimization, as far as I can 
+		 * by one. We calculate strlen(linebuf) again because we
+		 * *might* have chomped '\n' or not. Storing the size
+		 * beforehand is not a viable optimization, as far as I can
 		 * see.
 		 */
 		if (strlen(linebuf) == 0)
@@ -367,7 +367,7 @@ main(int argc, char *argv[])
 
 	if (datearg != NULL && is_date(datearg) < 0)
 		die("Invalid date format.");
-	
+
 	switch (mode) {
 	case APP_MODE:
 		input_mode(fileptr, NULL, 1);

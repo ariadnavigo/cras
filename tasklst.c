@@ -74,13 +74,13 @@ task_lst_on_date(TaskLst list)
 	struct tm *ltim;
 	time_t utim;
 	int year, month, day;
-	
+
 	utim = time(NULL);
 	ltim = localtime(&utim);
 	sscanf(list.date, "%d-%d-%d", &year, &month, &day);
 
 	/* We are valid only if on the same day */
-	if (year == ltim->tm_year + 1900 && month == ltim->tm_mon + 1 
+	if (year == ltim->tm_year + 1900 && month == ltim->tm_mon + 1
 	    && day == ltim->tm_mday)
 		return 0;
 	else
