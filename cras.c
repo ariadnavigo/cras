@@ -323,29 +323,29 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, ":anvd:e:t:T:w:")) != -1) {
 		switch (opt) {
 		case 'a':
-			mode != DEF_MODE ? usage() : mode = APP_MODE;
+			mode = APP_MODE;
 			break;
 		case 'n':
-			mode != DEF_MODE ? usage() : mode = NEW_MODE;
+			mode = NEW_MODE;
 			break;
 		case 'v':
 			die("cras %s", VERSION);
 			break;
 		case 'd':
-			mode != DEF_MODE ? usage() : mode = DLT_MODE;
+			mode = DLT_MODE;
 			numarg = optarg;
 			break;
 		case 'e':
-			mode != DEF_MODE ? usage() : mode = EDIT_MODE;
+			mode = EDIT_MODE;
 			numarg = optarg;
 			break;
 		case 't':
-			mode != DEF_MODE ? usage() : mode = MARK_MODE;
+			mode = MARK_MODE;
 			task_value = TASK_DONE;
 			numarg = optarg;
 			break;
 		case 'T':
-			mode != DEF_MODE ? usage() : mode = MARK_MODE;
+			mode = MARK_MODE;
 			task_value = TASK_TODO;
 			numarg = optarg;
 			break;
