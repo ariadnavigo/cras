@@ -323,49 +323,35 @@ main(int argc, char *argv[])
 	while ((opt = getopt(argc, argv, ":anvd:e:t:T:w:")) != -1) {
 		switch (opt) {
 		case 'a':
-			if (mode != DEF_MODE)
-				usage();
-			mode = APP_MODE;
+			mode != DEF_MODE ? usage() : mode = APP_MODE;
 			break;
 		case 'n':
-			if (mode != DEF_MODE)
-				usage();
-			mode = NEW_MODE;
+			mode != DEF_MODE ? usage() : mode = NEW_MODE;
 			break;
 		case 'v':
 			die("cras %s", VERSION);
 			break;
 		case 'd':
-			if (mode != DEF_MODE)
-				usage();
-			mode = DLT_MODE;
+			mode != DEF_MODE ? usage() : mode = DLT_MODE;
 			numarg = optarg;
 			break;
 		case 'e':
-			if (mode != DEF_MODE)
-				usage();
-			mode = EDIT_MODE;
+			mode != DEF_MODE ? usage() : mode = EDIT_MODE;
 			numarg = optarg;
 			break;
 		case 't':
-			if (mode != DEF_MODE)
-				usage();
-			mode = MARK_MODE;
+			mode != DEF_MODE ? usage() : mode = MARK_MODE;
 			task_value = TASK_DONE;
 			numarg = optarg;
 			break;
 		case 'T':
-			if (mode != DEF_MODE)
-				usage();
-			mode = MARK_MODE;
+			mode != DEF_MODE ? usage() : mode = MARK_MODE;
 			task_value = TASK_TODO;
 			numarg = optarg;
 			break;
 		case 'w':
 			date = 1;
 			datearg = optarg;
-			if (is_date(datearg) < 0)
-				die("Invalid date format.");
 			break;
 		default:
 			usage(); /* usage() dies, so nothing else needed. */
@@ -379,6 +365,9 @@ main(int argc, char *argv[])
 		fileptr = argv[optind];
 	}
 
+	if (datearg != NULL && is_date(datearg) < 0)
+		die("Invalid date format.");
+	
 	switch (mode) {
 	case APP_MODE:
 		input_mode(fileptr, NULL, 1);
