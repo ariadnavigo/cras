@@ -34,8 +34,8 @@ clean:
 
 dist: clean
 	mkdir -p cras-${VERSION}
-	cp -R LICENSE Makefile README.md arg.h config.def.h config.mk cras.1 \
-	   date.h strlcpy.h tasklst.h ${SRC} cras-${VERSION}
+	cp -R LICENSE Makefile README.md config.def.h config.mk cras.1 date.h \
+	   strlcpy.h tasklst.h ${SRC} cras-${VERSION}
 	tar -cf cras-${VERSION}.tar cras-${VERSION}
 	gzip cras-${VERSION}.tar
 	rm -rf cras-${VERSION}
