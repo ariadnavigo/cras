@@ -30,15 +30,7 @@ cras: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
 clean:
-	rm -f cras ${OBJ} cras-${VERSION}.tar.gz
-
-dist: clean
-	mkdir -p cras-${VERSION}
-	cp -R LICENSE Makefile README.md config.def.h config.mk cras.1 date.h \
-	   strlcpy.h tasklst.h ${SRC} cras-${VERSION}
-	tar -cf cras-${VERSION}.tar cras-${VERSION}
-	gzip cras-${VERSION}.tar
-	rm -rf cras-${VERSION}
+	rm -f cras ${OBJ}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
@@ -52,4 +44,4 @@ install: all
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/cras ${DESTDIR}${MANPREFIX}/man1/cras.1
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all options clean install uninstall
