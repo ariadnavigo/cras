@@ -27,7 +27,7 @@ tasklst.o: date.h strlcpy.h tasklst.h
 ${OBJ}: config.mk
 
 cras: ${OBJ}
-	${CC} -o $@ ${OBJ} ${LDFLAGS}
+	${CC} -o $@ ${OBJ} ${LDFLAGS} ${LIBS}
 
 clean:
 	rm -f cras ${OBJ}

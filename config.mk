@@ -7,11 +7,14 @@ VERSION = 2.0.2
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/man
 
+# Libraries
+LIBS = -lsline
+
 # Flags
-CPPFLAGS = -DVERSION=\"${VERSION}\" -D_POSIX_C_SOURCE=200809L
+CPPFLAGS = -I${PREFIX}/include -DVERSION=\"${VERSION}\" -D_POSIX_C_SOURCE=200809L
 #CFLAGS = -g -std=c99 -Wpedantic -Wall -Wextra
 CFLAGS = -std=c99 -Wpedantic -Wall -Wextra
-LDFLAGS =
+LDFLAGS = -L${PREFIX}/lib
 
 # Compiler and linker
 CC = cc

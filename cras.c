@@ -2,6 +2,8 @@
 
 #include <errno.h>
 #include <stdarg.h>
+#include <stddef.h>
+#include <sline.h> /* Depends on stddef.h */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +34,6 @@ static void print_task(Task task, int i);
 static int print_task_list(TaskLst list);
 static void read_file(TaskLst *list, const char *fname);
 static void write_file(const char *fname, TaskLst list);
-static int store_input(TaskLst *list, FILE *fp);
 static int parse_tasknum(const char *id);
 static void usage(void);
 
@@ -42,6 +43,8 @@ static void edit_mode(const char *fname, const char *id);
 static void input_mode(const char *fname, const char *date, int append);
 static void mark_list_mode(const char *fname, const char *id, int value);
 static void output_mode(const char *fname);
+
+static int sline_mode; /* Are we using sline or not? */
 
 static void
 die(const char *fmt, ...)
@@ -144,40 +147,6 @@ write_file(const char *fname, TaskLst list)
 }
 
 static int
-store_input(TaskLst *list, FILE *fp)
-{
-	int cnt;
-	char linebuf[TASK_LST_BUF_SIZE];
-
-	cnt = 0;
-	while (feof(fp) == 0) {
-		if (fgets(linebuf, TASK_LST_BUF_SIZE, fp) == NULL)
-			break;
-
-		/* Chomp '\n' */
-		if (linebuf[strlen(linebuf) - 1] == '\n')
-			linebuf[strlen(linebuf) - 1] = '\0';
-
-		/*
-		 * Ignoring blank lines so that the file doesn't get corrupted
-		 * by one. We calculate strlen(linebuf) again because we
-		 * *might* have chomped '\n' or not. Storing the size
-		 * beforehand is not a viable optimization, as far as I can
-		 * see.
-		 */
-		if (strlen(linebuf) == 0)
-			continue;
-
-		if (task_lst_add_task(list, TASK_TODO, linebuf) < 0)
-			return -1;
-
-		++cnt;
-	}
-
-	return cnt;
-}
-
-static int
 parse_tasknum(const char *id)
 {
 	int tasknum;
@@ -247,20 +216,52 @@ input_mode(const char *fname, const char *date, int append)
 {
 	int task_num;
 	TaskLst list;
+	char linebuf[TASK_LST_BUF_SIZE];
 
 	if (append > 0)
 		read_file(&list, fname);
 	else
 		task_lst_init(&list);
 
-	task_num = store_input(&list, stdin);
-	if (task_num < 0) {
-		task_lst_cleanup(&list);
-		die("Internal memory error.");
-	} else if (task_num == 0) {
+	while (feof(stdin) == 0) {
+		if (sline_mode > 0) {
+			if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
+			    && sline_err != SLINE_ERR_EOF) {
+				task_lst_cleanup(&list);
+				die("sline: %s.", sline_errmsg());
+			} else if (sline_err == SLINE_ERR_EOF) {
+				break;
+			}
+		} else if (fgets(linebuf, TASK_LST_BUF_SIZE, stdin) == NULL) {
+			break;
+		}
+
+		/* Chomp '\n' */
+		if (linebuf[strlen(linebuf) - 1] == '\n')
+			linebuf[strlen(linebuf) - 1] = '\0';
+
+		/*
+		 * Ignoring blank lines so that the file doesn't get corrupted
+		 * by one. We calculate strlen(linebuf) again because we
+		 * *might* have chomped '\n' or not. Storing the size
+		 * beforehand is not a viable optimization, as far as I can
+		 * see.
+		 */
+		if (strlen(linebuf) == 0)
+			continue;
+
+		if (task_lst_add_task(&list, TASK_TODO, linebuf) < 0) {
+			task_lst_cleanup(&list);
+			die("Internal memory error.");
+		}
+
+		++task_num;
+	}
+
+	if (task_num == 0) {
 		task_lst_cleanup(&list);
 		die("Aborting: empty task list.");
-	} else {
+	} else { /* DELETE branch */
 		/* Only set a new date if creating a new file */
 		if (append == 0)
 			task_lst_set_date(&list, date);
@@ -367,6 +368,12 @@ main(int argc, char *argv[])
 
 	if (datearg != NULL && is_date(datearg) < 0)
 		die("Invalid date format.");
+
+	if ((sline_mode = isatty(STDIN_FILENO)) > 0) {
+		if (sline_setup(0) < 0) /* Set up sline without history */
+			die("sline: %s.", sline_errmsg());
+		atexit(sline_end);
+	}
 
 	switch (mode) {
 	case APP_MODE:
