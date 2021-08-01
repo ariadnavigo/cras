@@ -203,7 +203,16 @@ edit_mode(const char *fname, const char *id)
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
 
-	fgets(newstr, TASK_LST_BUF_SIZE, stdin);
+	if (sline_mode > 0) {
+		if (sline(newstr, TASK_LST_BUF_SIZE) < 0) {
+			if (sline_err != SLINE_ERR_EOF) {
+				task_lst_cleanup(&list);
+				die("sline: %s.\n", sline_errmsg());
+			}
+		}
+	} else {
+		fgets(newstr, TASK_LST_BUF_SIZE, stdin);
+	}
 	task_set_tdesc(task, newstr);
 
 	write_file(fname, list);
