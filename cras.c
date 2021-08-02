@@ -204,6 +204,7 @@ edit_mode(const char *fname, const char *id)
 	}
 
 	if (sline_mode > 0) {
+		sline_set_prompt("#%02d: ", tasknum);
 		if (sline(newstr, TASK_LST_BUF_SIZE) < 0) {
 			if (sline_err != SLINE_ERR_EOF) {
 				task_lst_cleanup(&list);
@@ -234,6 +235,7 @@ input_mode(const char *fname, const char *date, int append)
 
 	while (feof(stdin) == 0) {
 		if (sline_mode > 0) {
+			sline_set_prompt("#%02d: ", task_num + 1);
 			if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
 			    && sline_err != SLINE_ERR_EOF) {
 				task_lst_cleanup(&list);
