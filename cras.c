@@ -204,7 +204,7 @@ edit_mode(const char *fname, const char *id)
 	}
 
 	if (sline_mode > 0) {
-		sline_set_prompt("#%02d: ", tasknum);
+		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
 		if (sline(newstr, TASK_LST_BUF_SIZE) < 0) {
 			if (sline_err != SLINE_ERR_EOF) {
 				task_lst_cleanup(&list);
