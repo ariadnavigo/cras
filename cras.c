@@ -29,6 +29,7 @@ enum {
 
 /* Auxiliary functions */
 static void die(const char *fmt, ...);
+static int prompt_input(char *linebuf, TaskLst *list);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(TaskLst list);
@@ -58,6 +59,20 @@ die(const char *fmt, ...)
 	va_end(ap);
 
 	exit(1);
+}
+
+static int
+prompt_input(char *linebuf, TaskLst *list)
+{
+	if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
+	    && sline_err != SLINE_ERR_EOF) {
+		task_lst_cleanup(list);
+		die("sline: %s.", sline_errmsg());
+	} else if (sline_err == SLINE_ERR_EOF) {
+		return -1;
+	}
+
+	return 0;
 }
 
 static void
@@ -189,7 +204,7 @@ delete_mode(const char *fname, const char *id)
 static void
 edit_mode(const char *fname, const char *id)
 {
-	int tasknum;
+	int tasknum, input_stat;
 	TaskLst list;
 	Task *task;
 	char newstr[TASK_LST_BUF_SIZE];
@@ -203,28 +218,29 @@ edit_mode(const char *fname, const char *id)
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
 
+	input_stat = 0;
 	if (sline_mode > 0) {
 		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
-		if (sline(newstr, TASK_LST_BUF_SIZE) < 0) {
-			if (sline_err != SLINE_ERR_EOF) {
-				task_lst_cleanup(&list);
-				die("sline: %s.\n", sline_errmsg());
-			}
-		}
-	} else {
-		fgets(newstr, TASK_LST_BUF_SIZE, stdin);
+		input_stat = prompt_input(newstr, &list);
+	} else if (fgets(newstr, TASK_LST_BUF_SIZE, stdin) == NULL) {
+		input_stat = -1;
 	}
+
+	if (input_stat < 0)
+		goto clean;
+
 	task_set_tdesc(task, newstr);
 
 	write_file(fname, list);
 
+clean:
 	task_lst_cleanup(&list);
 }
 
 static void
 input_mode(const char *fname, const char *date, int append)
 {
-	int task_num;
+	int tasknum, input_stat;
 	TaskLst list;
 	char linebuf[TASK_LST_BUF_SIZE];
 
@@ -233,19 +249,17 @@ input_mode(const char *fname, const char *date, int append)
 	else
 		task_lst_init(&list);
 
+	input_stat = 0;
 	while (feof(stdin) == 0) {
 		if (sline_mode > 0) {
-			sline_set_prompt("#%02d: ", task_num + 1);
-			if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
-			    && sline_err != SLINE_ERR_EOF) {
-				task_lst_cleanup(&list);
-				die("sline: %s.", sline_errmsg());
-			} else if (sline_err == SLINE_ERR_EOF) {
-				break;
-			}
+			sline_set_prompt("#%02d: ", tasknum + 1);
+			input_stat = prompt_input(linebuf, &list);
 		} else if (fgets(linebuf, TASK_LST_BUF_SIZE, stdin) == NULL) {
-			break;
+			input_stat = -1;
 		}
+
+		if (input_stat < 0)
+			break;
 
 		/* Chomp '\n' */
 		if (linebuf[strlen(linebuf) - 1] == '\n')
@@ -266,21 +280,21 @@ input_mode(const char *fname, const char *date, int append)
 			die("Internal memory error.");
 		}
 
-		++task_num;
+		++tasknum;
 	}
 
-	if (task_num == 0) {
+	if (tasknum == 0) {
 		task_lst_cleanup(&list);
 		die("Aborting: empty task list.");
-	} else { /* DELETE branch */
-		/* Only set a new date if creating a new file */
-		if (append == 0)
-			task_lst_set_date(&list, date);
-
-		write_file(fname, list);
-
-		task_lst_cleanup(&list);
 	}
+
+	/* Only set a new date if creating a new file */
+	if (append == 0)
+		task_lst_set_date(&list, date);
+
+	write_file(fname, list);
+
+	task_lst_cleanup(&list);
 }
 
 static void
