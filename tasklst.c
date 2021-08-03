@@ -152,6 +152,18 @@ task_lst_del_task(TaskLst *list, int i)
 }
 
 int
+task_lst_get_size(TaskLst list)
+{
+	Task *ptr;
+	int accu;
+
+	for (accu = 0, ptr = list.first; ptr != NULL; ptr = ptr->next)
+		++accu;
+
+	return accu;
+}
+
+int
 task_lst_read_from_file(TaskLst *list, FILE *fp)
 {
 	int stat_buf;

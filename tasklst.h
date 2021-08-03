@@ -31,6 +31,7 @@ int task_lst_on_date(TaskLst list);
 Task *task_lst_get_task(TaskLst list, int i);
 int task_lst_add_task(TaskLst *list, int status, const char *str);
 int task_lst_del_task(TaskLst *list, int i);
+int task_lst_get_size(TaskLst list);
 int task_lst_read_from_file(TaskLst *list, FILE *fp);
 void task_lst_write_to_file(FILE *fp, TaskLst list);
 
