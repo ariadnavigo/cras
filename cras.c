@@ -228,6 +228,12 @@ edit_mode(const char *fname, const char *id)
 
 	if (input_stat < 0)
 		goto clean;
+		
+	if (newstr[strlen(newstr) - 1] == '\n')
+		newstr[strlen(newstr) - 1] = '\0';
+
+	if (strlen(newstr) == 0)
+		goto clean;
 
 	task_set_tdesc(task, newstr);
 
@@ -261,17 +267,9 @@ input_mode(const char *fname, const char *date, int append)
 		if (input_stat < 0)
 			break;
 
-		/* Chomp '\n' */
 		if (linebuf[strlen(linebuf) - 1] == '\n')
 			linebuf[strlen(linebuf) - 1] = '\0';
 
-		/*
-		 * Ignoring blank lines so that the file doesn't get corrupted
-		 * by one. We calculate strlen(linebuf) again because we
-		 * *might* have chomped '\n' or not. Storing the size
-		 * beforehand is not a viable optimization, as far as I can
-		 * see.
-		 */
 		if (strlen(linebuf) == 0)
 			continue;
 
