@@ -46,7 +46,9 @@ You may delete tasks by using the
 option followed by its identifying number.
 You may similarly edit the description of a task by using the 
 .I \-e 
-option. 
+option.
+When editing,
+sending EOF or leaving the line blank will abort the operation. 
 .PP
 Running 
 .B cras 
@@ -116,11 +118,11 @@ To set a task list up:
 .RS
 .RB $ " cras \-n my-todo"
 .br
-.B "This is a test"
+.RB "#01: " "This is a test"
 .br
-.B "Writing a manpage"
+.RB "#02: " "Writing a manpage"
 .br
-.B "For cras"
+.RB "#03: " "For cras"
 .RE
 .fi
 .PP
@@ -157,7 +159,7 @@ Appending new entries:
 .RS
 .RB $ " cras \-a my-todo"
 .br
-.B "New entry"
+.RB "#04: " "New entry"
 .br
 .RB $ " cras my-todo"
 .br
@@ -182,7 +184,7 @@ Editing and deleting individual tasks:
 .RS
 .RB $ " cras \-e 1 my-todo"
 .br
-.B "New text for entry 1"
+.RB "[Edit #01: Old entry text]: " "New text for entry 1"
 .br
 .RB $ " cras \-d 2 my-todo"
 .RE
