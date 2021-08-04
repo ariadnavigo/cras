@@ -29,12 +29,12 @@ enum {
 
 /* Auxiliary functions */
 static void die(const char *fmt, ...);
-static int prompt_input(char *linebuf, TaskLst *list);
+static int prompt_input(char *linebuf);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
-static int print_task_list(TaskLst list);
-static void read_file(TaskLst *list, const char *fname);
-static void write_file(const char *fname, TaskLst list);
+static int print_task_list(void);
+static void read_file(const char *fname);
+static void write_file(const char *fname);
 static int parse_tasknum(const char *id);
 static void usage(void);
 
@@ -45,6 +45,7 @@ static void input_mode(const char *fname, const char *date, int append);
 static void mark_list_mode(const char *fname, const char *id, int value);
 static void output_mode(const char *fname);
 
+static TaskLst list;
 static int sline_mode; /* Are we using sline or not? */
 
 static void
@@ -62,11 +63,11 @@ die(const char *fmt, ...)
 }
 
 static int
-prompt_input(char *linebuf, TaskLst *list)
+prompt_input(char *linebuf)
 {
 	if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
 	    && sline_err != SLINE_ERR_EOF) {
-		task_lst_cleanup(list);
+		task_lst_cleanup(&list);
 		die("sline: %s.", sline_errmsg());
 	} else if (sline_err == SLINE_ERR_EOF) {
 		return -1;
@@ -108,7 +109,7 @@ print_task(Task task, int i)
 }
 
 static int
-print_task_list(TaskLst list)
+print_task_list(void)
 {
 	Task *ptr;
 	int i;
@@ -122,7 +123,7 @@ print_task_list(TaskLst list)
 }
 
 static void
-read_file(TaskLst *list, const char *fname)
+read_file(const char *fname)
 {
 	int read_stat;
 	FILE *fp;
@@ -132,23 +133,23 @@ read_file(TaskLst *list, const char *fname)
 	if (fp == NULL)
 		die("Could not read %s: %s.", fname, strerror(errno));
 
-	read_stat = task_lst_read_from_file(list, fp);
+	read_stat = task_lst_read_from_file(&list, fp);
 	fclose(fp);
 
 	if (read_stat < 0) {
-		task_lst_cleanup(list);
+		task_lst_cleanup(&list);
 		die("%s: not a cras file.", fname);
 	}
 
-	if (task_lst_on_date(*list) < 0) {
-		strlcpy(date_buf, list->date, DATE_SIZE);
-		task_lst_cleanup(list);
+	if (task_lst_on_date(list) < 0) {
+		strlcpy(date_buf, list.date, DATE_SIZE);
+		task_lst_cleanup(&list);
 		die("%s: valid on %s.", fname, date_buf);
 	}
 }
 
 static void
-write_file(const char *fname, TaskLst list)
+write_file(const char *fname)
 {
 	FILE *fp;
 
@@ -186,17 +187,16 @@ static void
 delete_mode(const char *fname, const char *id)
 {
 	int tasknum;
-	TaskLst list;
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, fname);
+	read_file(fname);
 
 	if (task_lst_del_task(&list, tasknum - 1) < 0) {
 		task_lst_cleanup(&list);
 		die(TASK_NONEXIST_MSG, tasknum);
 	}
-	write_file(fname, list);
+	write_file(fname);
 
 	task_lst_cleanup(&list);
 }
@@ -205,13 +205,12 @@ static void
 edit_mode(const char *fname, const char *id)
 {
 	int tasknum, input_stat;
-	TaskLst list;
 	Task *task;
 	char newstr[TASK_LST_BUF_SIZE];
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, fname);
+	read_file(fname);
 
 	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL) {
 		task_lst_cleanup(&list);
@@ -221,7 +220,7 @@ edit_mode(const char *fname, const char *id)
 	input_stat = 0;
 	if (sline_mode > 0) {
 		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
-		input_stat = prompt_input(newstr, &list);
+		input_stat = prompt_input(newstr);
 	} else if (fgets(newstr, TASK_LST_BUF_SIZE, stdin) == NULL) {
 		input_stat = -1;
 	}
@@ -237,7 +236,7 @@ edit_mode(const char *fname, const char *id)
 
 	task_set_tdesc(task, newstr);
 
-	write_file(fname, list);
+	write_file(fname);
 
 clean:
 	task_lst_cleanup(&list);
@@ -247,11 +246,10 @@ static void
 input_mode(const char *fname, const char *date, int append)
 {
 	int tasknum, input_stat;
-	TaskLst list;
 	char linebuf[TASK_LST_BUF_SIZE];
 
 	if (append > 0)
-		read_file(&list, fname);
+		read_file(fname);
 	else
 		task_lst_init(&list);
 
@@ -260,7 +258,7 @@ input_mode(const char *fname, const char *date, int append)
 	while (feof(stdin) == 0) {
 		if (sline_mode > 0) {
 			sline_set_prompt("#%02d: ", tasknum + 1);
-			input_stat = prompt_input(linebuf, &list);
+			input_stat = prompt_input(linebuf);
 		} else if (fgets(linebuf, TASK_LST_BUF_SIZE, stdin) == NULL) {
 			input_stat = -1;
 		}
@@ -291,7 +289,7 @@ input_mode(const char *fname, const char *date, int append)
 	if (append == 0)
 		task_lst_set_date(&list, date);
 
-	write_file(fname, list);
+	write_file(fname);
 
 	task_lst_cleanup(&list);
 }
@@ -300,12 +298,11 @@ static void
 mark_list_mode(const char *fname, const char *id, int value)
 {
 	int tasknum;
-	TaskLst list;
 	Task *task;
 
 	tasknum = parse_tasknum(id);
 
-	read_file(&list, fname);
+	read_file(fname);
 
 	task = task_lst_get_task(list, tasknum - 1);
 	if (task == NULL) {
@@ -314,7 +311,7 @@ mark_list_mode(const char *fname, const char *id, int value)
 	}
 
 	task->status = value;
-	write_file(fname, list);
+	write_file(fname);
 
 	print_task(*task, tasknum - 1);
 
@@ -324,12 +321,10 @@ mark_list_mode(const char *fname, const char *id, int value)
 static void
 output_mode(const char *fname)
 {
-	TaskLst list;
-
-	read_file(&list, fname);
+	read_file(fname);
 
 	printf("%s\n", list.date);
-	print_task_list(list);
+	print_task_list();
 
 	task_lst_cleanup(&list);
 }
