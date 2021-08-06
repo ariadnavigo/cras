@@ -29,6 +29,7 @@ enum {
 
 /* Auxiliary functions */
 static void die(const char *fmt, ...);
+static void cleanup(void);
 static int prompt_input(char *linebuf);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
@@ -62,16 +63,23 @@ die(const char *fmt, ...)
 	exit(1);
 }
 
+static void
+cleanup(void)
+{
+	task_lst_cleanup(&list);
+
+	if (sline_mode > 0)
+		sline_end();
+}
+
 static int
 prompt_input(char *linebuf)
 {
 	if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
-	    && sline_err != SLINE_ERR_EOF) {
-		task_lst_cleanup(&list);
+	    && sline_err != SLINE_ERR_EOF)
 		die("sline: %s.", sline_errmsg());
-	} else if (sline_err == SLINE_ERR_EOF) {
+	else if (sline_err == SLINE_ERR_EOF)
 		return -1;
-	}
 
 	return 0;
 }
@@ -136,14 +144,11 @@ read_file(const char *fname)
 	read_stat = task_lst_read_from_file(&list, fp);
 	fclose(fp);
 
-	if (read_stat < 0) {
-		task_lst_cleanup(&list);
+	if (read_stat < 0)
 		die("%s: not a cras file.", fname);
-	}
 
 	if (task_lst_on_date(list) < 0) {
 		strlcpy(date_buf, list.date, DATE_SIZE);
-		task_lst_cleanup(&list);
 		die("%s: valid on %s.", fname, date_buf);
 	}
 }
@@ -153,10 +158,8 @@ write_file(const char *fname)
 {
 	FILE *fp;
 
-	if ((fp = fopen(fname, "w")) == NULL) {
-		task_lst_cleanup(&list);
+	if ((fp = fopen(fname, "w")) == NULL)
 		die("Could not write to %s: %s", fname, strerror(errno));
-	}
 
 	task_lst_write_to_file(fp, list);
 	fclose(fp);
@@ -192,13 +195,10 @@ delete_mode(const char *fname, const char *id)
 
 	read_file(fname);
 
-	if (task_lst_del_task(&list, tasknum - 1) < 0) {
-		task_lst_cleanup(&list);
+	if (task_lst_del_task(&list, tasknum - 1) < 0)
 		die(TASK_NONEXIST_MSG, tasknum);
-	}
-	write_file(fname);
 
-	task_lst_cleanup(&list);
+	write_file(fname);
 }
 
 static void
@@ -212,10 +212,8 @@ edit_mode(const char *fname, const char *id)
 
 	read_file(fname);
 
-	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL) {
-		task_lst_cleanup(&list);
+	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL)
 		die(TASK_NONEXIST_MSG, tasknum);
-	}
 
 	input_stat = 0;
 	if (sline_mode > 0) {
@@ -226,20 +224,17 @@ edit_mode(const char *fname, const char *id)
 	}
 
 	if (input_stat < 0)
-		goto clean;
+		return;
 		
 	if (newstr[strlen(newstr) - 1] == '\n')
 		newstr[strlen(newstr) - 1] = '\0';
 
 	if (strlen(newstr) == 0)
-		goto clean;
+		return;
 
 	task_set_tdesc(task, newstr);
 
 	write_file(fname);
-
-clean:
-	task_lst_cleanup(&list);
 }
 
 static void
@@ -272,26 +267,20 @@ input_mode(const char *fname, const char *date, int append)
 		if (strlen(linebuf) == 0)
 			continue;
 
-		if (task_lst_add_task(&list, TASK_TODO, linebuf) < 0) {
-			task_lst_cleanup(&list);
+		if (task_lst_add_task(&list, TASK_TODO, linebuf) < 0)
 			die("Internal memory error.");
-		}
 
 		++tasknum;
 	}
 
-	if (tasknum == 0) {
-		task_lst_cleanup(&list);
+	if (tasknum == 0)
 		die("Aborting: empty task list.");
-	}
 
 	/* Only set a new date if creating a new file */
 	if (append == 0)
 		task_lst_set_date(&list, date);
 
 	write_file(fname);
-
-	task_lst_cleanup(&list);
 }
 
 static void
@@ -305,17 +294,13 @@ mark_list_mode(const char *fname, const char *id, int value)
 	read_file(fname);
 
 	task = task_lst_get_task(list, tasknum - 1);
-	if (task == NULL) {
-		task_lst_cleanup(&list);
+	if (task == NULL)
 		die(TASK_NONEXIST_MSG, tasknum);
-	}
 
 	task->status = value;
 	write_file(fname);
 
 	print_task(*task, tasknum - 1);
-
-	task_lst_cleanup(&list);
 }
 
 static void
@@ -325,8 +310,6 @@ output_mode(const char *fname)
 
 	printf("%s\n", list.date);
 	print_task_list();
-
-	task_lst_cleanup(&list);
 }
 
 int
@@ -335,6 +318,8 @@ main(int argc, char *argv[])
 	char *numarg, *datearg;
 	const char *fileptr;
 	int opt, mode, date, task_value;
+
+	atexit(cleanup);
 
 	mode = DEF_MODE;
 	numarg = NULL;
@@ -391,7 +376,6 @@ main(int argc, char *argv[])
 	if ((sline_mode = isatty(STDIN_FILENO)) > 0) {
 		if (sline_setup(0) < 0) /* Set up sline without history */
 			die("sline: %s.", sline_errmsg());
-		atexit(sline_end);
 	}
 
 	switch (mode) {
