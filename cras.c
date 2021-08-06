@@ -30,14 +30,16 @@ enum {
 /* Auxiliary functions */
 static void die(const char *fmt, ...);
 static void cleanup(void);
+static void usage(void);
+static int parse_tasknum(const char *id);
+
+/* I/O */
 static int prompt_input(char *linebuf);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(void);
 static void read_file(const char *fname);
 static void write_file(const char *fname);
-static int parse_tasknum(const char *id);
-static void usage(void);
 
 /* Execution modes */
 static void delete_mode(const char *fname, const char *id);
@@ -70,6 +72,27 @@ cleanup(void)
 
 	if (sline_mode > 0)
 		sline_end();
+}
+
+static void
+usage(void)
+{
+	die("usage: cras [-anv] [-detT num] [-w date] [file]");
+}
+
+static int
+parse_tasknum(const char *id)
+{
+	int tasknum;
+	char *endptr;
+
+	tasknum = strtol(id, &endptr, 10);
+	if (endptr[0] != '\0')
+		die("'%s' not a number.", id);
+	if (tasknum <= 0)
+		die("Task number must be greater than zero.");
+
+	return tasknum;
 }
 
 static int
@@ -163,27 +186,6 @@ write_file(const char *fname)
 
 	task_lst_write_to_file(fp, list);
 	fclose(fp);
-}
-
-static int
-parse_tasknum(const char *id)
-{
-	int tasknum;
-	char *endptr;
-
-	tasknum = strtol(id, &endptr, 10);
-	if (endptr[0] != '\0')
-		die("'%s' not a number.", id);
-	if (tasknum <= 0)
-		die("Task number must be greater than zero.");
-
-	return tasknum;
-}
-
-static void
-usage(void)
-{
-	die("usage: cras [-anv] [-detT num] [-w date] [file]");
 }
 
 static void
