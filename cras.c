@@ -98,8 +98,10 @@ parse_tasknum(const char *id)
 static int
 prompt_input(char *linebuf)
 {
-	if (sline(linebuf, TASK_LST_BUF_SIZE) < 0 
-	    && sline_err != SLINE_ERR_EOF)
+	int sline_ret;
+
+	sline_ret = sline(linebuf, TASK_LST_BUF_SIZE);
+	if (sline_ret < 0 && sline_err != SLINE_ERR_EOF)
 		die("sline: %s.", sline_errmsg());
 	else if (sline_err == SLINE_ERR_EOF)
 		return -1;
