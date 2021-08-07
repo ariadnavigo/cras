@@ -2,9 +2,6 @@
 
 #define TASK_TDESC_SIZE 64
 
-/* Let's give buffers some breathing room, just to be sure. */
-#define TASK_LST_BUF_SIZE TASK_TDESC_SIZE + 10
-
 enum {
 	TASK_TODO,
 	TASK_DONE

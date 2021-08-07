@@ -100,7 +100,7 @@ prompt_input(char *linebuf)
 {
 	int sline_ret;
 
-	sline_ret = sline(linebuf, TASK_LST_BUF_SIZE);
+	sline_ret = sline(linebuf, TASK_TDESC_SIZE - 1);
 	if (sline_ret < 0 && sline_err != SLINE_ERR_EOF)
 		die("sline: %s.", sline_errmsg());
 	else if (sline_err == SLINE_ERR_EOF)
@@ -210,7 +210,7 @@ edit_mode(const char *fname, const char *id)
 {
 	int tasknum, input_stat;
 	Task *task;
-	char newstr[TASK_LST_BUF_SIZE];
+	char newstr[TASK_TDESC_SIZE];
 
 	tasknum = parse_tasknum(id);
 
@@ -223,7 +223,7 @@ edit_mode(const char *fname, const char *id)
 	if (sline_mode > 0) {
 		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
 		input_stat = prompt_input(newstr);
-	} else if (fgets(newstr, TASK_LST_BUF_SIZE, stdin) == NULL) {
+	} else if (fgets(newstr, TASK_TDESC_SIZE - 1, stdin) == NULL) {
 		input_stat = -1;
 	}
 
@@ -245,7 +245,7 @@ static void
 input_mode(const char *fname, const char *date, int append)
 {
 	int tasknum, input_stat;
-	char linebuf[TASK_LST_BUF_SIZE];
+	char linebuf[TASK_TDESC_SIZE];
 
 	if (append > 0)
 		read_file(fname);
@@ -258,7 +258,7 @@ input_mode(const char *fname, const char *date, int append)
 		if (sline_mode > 0) {
 			sline_set_prompt("#%02d: ", tasknum + 1);
 			input_stat = prompt_input(linebuf);
-		} else if (fgets(linebuf, TASK_LST_BUF_SIZE, stdin) == NULL) {
+		} else if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL) {
 			input_stat = -1;
 		}
 

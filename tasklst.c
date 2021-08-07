@@ -9,6 +9,9 @@
 #include "strlcpy.h"
 #include "tasklst.h"
 
+/* Let's give buffers some breathing room, just to be sure. */
+#define TASK_LST_BUF_SIZE TASK_TDESC_SIZE + 10
+
 static Task *task_lst_get_last_task(TaskLst list);
 
 static Task *
