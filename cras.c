@@ -223,7 +223,7 @@ edit_mode(const char *fname, const char *id)
 	if (sline_mode > 0) {
 		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
 		input_stat = prompt_input(newstr);
-	} else if (fgets(newstr, TASK_TDESC_SIZE - 1, stdin) == NULL) {
+	} else if (fgets(newstr, TASK_TDESC_SIZE, stdin) == NULL) {
 		input_stat = -1;
 	}
 
