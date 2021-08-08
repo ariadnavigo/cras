@@ -100,7 +100,7 @@ prompt_input(char *linebuf)
 {
 	int sline_ret;
 
-	sline_ret = sline(linebuf, TASK_TDESC_SIZE - 1);
+	sline_ret = sline(linebuf, TASK_TDESC_SIZE);
 	if (sline_ret < 0 && sline_err != SLINE_ERR_EOF)
 		die("sline: %s.", sline_errmsg());
 	else if (sline_err == SLINE_ERR_EOF)
