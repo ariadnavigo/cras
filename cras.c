@@ -134,11 +134,11 @@ print_task(Task task, int i)
 {
 	printf("#%02d ", i + 1);
 	if (task.status == TASK_TODO)
-		printf_color(task_todo_color, "%s ", task_todo_str);
+		printf_color(task_todo_color, "%s", task_todo_str);
 	else /* TASK_DONE */
-		printf_color(task_done_color, "%s ", task_done_str);
+		printf_color(task_done_color, "%s", task_done_str);
 
-	printf("%s\n", task.tdesc);
+	printf(" %s\n", task.tdesc);
 }
 
 static int
