@@ -100,16 +100,22 @@ static int
 fd_input(char *linebuf)
 {
 	static int line = 1;
+
 	char trash;
+	char *last_chr;
 
 	if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL)
 		return -1;
 
-	/* Flushing stdin */
-	if (linebuf[strlen(linebuf) - 1] != '\n') {
+	last_chr = &linebuf[strlen(linebuf) - 1];
+
+	/* Flushing stdin if there's more input; chomping '\n' if not. */
+	if (*last_chr != '\n') {
 		fprintf(stderr, "Warn: stdin: line %d truncated (too long).\n",
 		        line);
 		while ((trash = fgetc(stdin)) != '\n' && trash != EOF);
+	} else {
+		*last_chr = '\0';
 	}
 
 	++line;
@@ -251,9 +257,6 @@ edit_mode(const char *fname, const char *id)
 
 	if (input_stat < 0)
 		return;
-		
-	if (newstr[strlen(newstr) - 1] == '\n')
-		newstr[strlen(newstr) - 1] = '\0';
 
 	if (strlen(newstr) == 0)
 		return;
