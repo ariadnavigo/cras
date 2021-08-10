@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -34,6 +35,7 @@ static void usage(void);
 static int parse_tasknum(const char *id);
 
 /* I/O */
+static int fd_input(char *linebuf);
 static int prompt_input(char *linebuf);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
@@ -93,6 +95,26 @@ parse_tasknum(const char *id)
 		die("Task number must be greater than zero.");
 
 	return tasknum;
+}
+
+static int
+fd_input(char *linebuf)
+{
+	static int line = 1;
+
+	if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL)
+		return -1;
+
+	/* Flushing stdin */
+	if (linebuf[strlen(linebuf) - 1] != '\n') {
+		fprintf(stderr, "Warn: stdin: line %d truncated (too long).\n",
+		        line);
+		while (fgetc(stdin) != '\n');
+	}
+
+	++line;
+
+	return 0;
 }
 
 static int
@@ -223,7 +245,7 @@ edit_mode(const char *fname, const char *id)
 	if (sline_mode > 0) {
 		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
 		input_stat = prompt_input(newstr);
-	} else if (fgets(newstr, TASK_TDESC_SIZE, stdin) == NULL) {
+	} else if (fd_input(newstr) < 0) {
 		input_stat = -1;
 	}
 
@@ -258,7 +280,7 @@ input_mode(const char *fname, const char *date, int append)
 		if (sline_mode > 0) {
 			sline_set_prompt("#%02d: ", tasknum + 1);
 			input_stat = prompt_input(linebuf);
-		} else if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL) {
+		} else if (fd_input(linebuf) < 0) {
 			input_stat = -1;
 		}
 
