@@ -100,6 +100,7 @@ static int
 fd_input(char *linebuf)
 {
 	static int line = 1;
+	char trash;
 
 	if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL)
 		return -1;
@@ -108,7 +109,7 @@ fd_input(char *linebuf)
 	if (linebuf[strlen(linebuf) - 1] != '\n') {
 		fprintf(stderr, "Warn: stdin: line %d truncated (too long).\n",
 		        line);
-		while (fgetc(stdin) != '\n');
+		while ((trash = fgetc(stdin)) != '\n' && trash != EOF);
 	}
 
 	++line;
