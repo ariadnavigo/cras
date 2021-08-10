@@ -1,13 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <errno.h>
+#include <stddef.h> /* Dependency for sline.h */
+#include <sline.h>
 #include <stdarg.h>
-#include <stddef.h>
-#include <sline.h> /* Depends on stddef.h */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/select.h>
 #include <time.h>
 #include <unistd.h>
 
