@@ -1,7 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <errno.h>
-#include <stddef.h> /* Dependency for sline.h */
 #include <sline.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -35,7 +34,7 @@ static int parse_tasknum(const char *id);
 
 /* I/O */
 static int fd_input(char *linebuf);
-static int prompt_input(char *linebuf);
+static int prompt_input(char *linebuf, const char *initstr);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(void);
@@ -124,11 +123,11 @@ fd_input(char *linebuf)
 }
 
 static int
-prompt_input(char *linebuf)
+prompt_input(char *linebuf, const char *initstr)
 {
 	int sline_ret;
 
-	sline_ret = sline(linebuf, TASK_TDESC_SIZE);
+	sline_ret = sline(linebuf, TASK_TDESC_SIZE, initstr);
 	if (sline_ret < 0 && sline_err != SLINE_ERR_EOF)
 		die("sline: %s.", sline_errmsg());
 	else if (sline_err == SLINE_ERR_EOF)
@@ -249,8 +248,8 @@ edit_mode(const char *fname, const char *id)
 
 	input_stat = 0;
 	if (sline_mode > 0) {
-		sline_set_prompt("[Edit #%02d: %s]: ", tasknum, task->tdesc);
-		input_stat = prompt_input(newstr);
+		sline_set_prompt("#%02d: ", tasknum);
+		input_stat = prompt_input(newstr, task->tdesc);
 	} else if (fd_input(newstr) < 0) {
 		input_stat = -1;
 	}
@@ -282,7 +281,7 @@ input_mode(const char *fname, const char *date, int append)
 	while (feof(stdin) == 0) {
 		if (sline_mode > 0) {
 			sline_set_prompt("#%02d: ", tasknum + 1);
-			input_stat = prompt_input(linebuf);
+			input_stat = prompt_input(linebuf, NULL);
 		} else if (fd_input(linebuf) < 0) {
 			input_stat = -1;
 		}
@@ -363,7 +362,7 @@ main(int argc, char *argv[])
 			mode = NEW_MODE;
 			break;
 		case 'v':
-			die("cras %s", VERSION);
+			die("cras %s (sline %s)", VERSION, sline_version());
 			break;
 		case 'd':
 			mode = DLT_MODE;
