@@ -38,7 +38,7 @@ static int prompt_input(char *linebuf, const char *initstr);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
 static void print_task(Task task, int i);
 static int print_task_list(void);
-static void read_file(const char *fname);
+static void read_file(const char *fname, int allow_future);
 static void write_file(const char *fname);
 
 /* Execution modes */
@@ -183,7 +183,7 @@ print_task_list(void)
 }
 
 static void
-read_file(const char *fname)
+read_file(const char *fname, int allow_future)
 {
 	int read_stat;
 	FILE *fp;
@@ -199,7 +199,8 @@ read_file(const char *fname)
 	if (read_stat < 0)
 		die("%s: not a cras file.", fname);
 
-	if (task_lst_on_date(list) < 0) {
+	if (task_lst_on_date(list) < 0
+	 || (allow_future == 0 && task_lst_on_date(list) > 0)) {
 		strlcpy(date_buf, list.date, DATE_SIZE);
 		die("%s: valid on %s.", fname, date_buf);
 	}
@@ -224,7 +225,7 @@ delete_mode(const char *fname, const char *id)
 
 	tasknum = parse_tasknum(id);
 
-	read_file(fname);
+	read_file(fname, 1);
 
 	if (task_lst_del_task(&list, tasknum - 1) < 0)
 		die(TASK_NONEXIST_MSG, tasknum);
@@ -241,7 +242,7 @@ edit_mode(const char *fname, const char *id)
 
 	tasknum = parse_tasknum(id);
 
-	read_file(fname);
+	read_file(fname, 1);
 
 	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL)
 		die(TASK_NONEXIST_MSG, tasknum);
@@ -272,7 +273,7 @@ input_mode(const char *fname, const char *date, int append)
 	char linebuf[TASK_TDESC_SIZE];
 
 	if (append > 0)
-		read_file(fname);
+		read_file(fname, 1);
 	else
 		task_lst_init(&list);
 
@@ -319,7 +320,7 @@ mark_list_mode(const char *fname, const char *id, int value)
 
 	tasknum = parse_tasknum(id);
 
-	read_file(fname);
+	read_file(fname, 0);
 
 	task = task_lst_get_task(list, tasknum - 1);
 	if (task == NULL)
@@ -334,7 +335,7 @@ mark_list_mode(const char *fname, const char *id, int value)
 static void
 output_mode(const char *fname)
 {
-	read_file(fname);
+	read_file(fname, 1);
 
 	printf("%s\n", list.date);
 	print_task_list();

@@ -76,18 +76,29 @@ task_lst_on_date(TaskLst list)
 {
 	struct tm *ltim;
 	time_t utim;
-	int year, month, day;
+	int year, month, day, cmp_year, cmp_month, cmp_day, cmp_ymd;
 
 	utim = time(NULL);
 	ltim = localtime(&utim);
 	sscanf(list.date, "%d-%d-%d", &year, &month, &day);
 
+	cmp_year = (year == ltim->tm_year + 1900 ? 0
+	         : (year > ltim->tm_year + 1900 ? 4 : -4));
+	cmp_month = (month == ltim->tm_mon + 1 ? 0
+	          : (month > ltim->tm_mon + 1 ? 2 : -2));
+	cmp_day = (day == ltim->tm_mday ? 0
+	        : (day > ltim->tm_mday ? 1 : -1));
+	/* It's a hack but the sum should indicate whether
+	 * the date is in future or not. */
+	cmp_ymd = cmp_year + cmp_month + cmp_day;
+
 	/* We are valid only if on the same day */
-	if (year == ltim->tm_year + 1900 && month == ltim->tm_mon + 1
-	    && day == ltim->tm_mday)
+	if (cmp_ymd == 0)
 		return 0;
+	else if (cmp_ymd > 0)
+		return 1; /* The list's date is in the future. */
 	else
-		return -1;
+		return -1; /* The list's date is in the past. */
 }
 
 Task *
