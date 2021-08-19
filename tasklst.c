@@ -83,11 +83,11 @@ task_lst_on_date(TaskLst list)
 	sscanf(list.date, "%d-%d-%d", &year, &month, &day);
 
 	cmp_year = (year == ltim->tm_year + 1900 ? 0
-	         : (year > ltim->tm_year + 1900 ? 4 : -4));
+	            : (year > ltim->tm_year + 1900 ? 4 : -4));
 	cmp_month = (month == ltim->tm_mon + 1 ? 0
-	          : (month > ltim->tm_mon + 1 ? 2 : -2));
+	             : (month > ltim->tm_mon + 1 ? 2 : -2));
 	cmp_day = (day == ltim->tm_mday ? 0
-	        : (day > ltim->tm_mday ? 1 : -1));
+	           : (day > ltim->tm_mday ? 1 : -1));
 	/* It's a hack but the sum should indicate whether
 	 * the date is in future or not. */
 	cmp_ymd = cmp_year + cmp_month + cmp_day;
