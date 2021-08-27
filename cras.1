@@ -26,8 +26,6 @@ option.
 .B cras 
 will read each new line from standard input as a new task, 
 until EOF is reached. 
-Add new tasks to an already existing file using 
-.IR \-a .
 .PP
 By default, the newly created task list will be readable by 
 .B cras 
@@ -35,12 +33,16 @@ only throughout the day saved on the list.
 Alternatively, you may set the date for a task list file by using
 .I \-w
 and providing a date in YYYY-MM-DD format (ISO 8601 extended.)
-Use 
+.PP
+Use
 .I \-t 
 to mark a task as done and 
 .I \-T 
 to mark it back as pending.
+These two operations are only permitted during the day the task list is valid.
 .PP
+Add new tasks to an already existing file using 
+.IR \-a .
 You may delete tasks by using the 
 .I \-d 
 option followed by its identifying number.
@@ -48,11 +50,12 @@ You may similarly edit the description of a task by using the
 .I \-e 
 option.
 When editing,
-sending EOF or leaving the line blank will abort the operation. 
+sending EOF or leaving the line blank will abort the operation.
+These three operations can be used on task lists with a current or future date. 
 .PP
 Running 
 .B cras 
-with no options outputs the task list. 
+with no options outputs task lists with a current or future date.
 .SH OPTIONS
 .TP
 .B \-a
