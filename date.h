@@ -4,3 +4,4 @@
 
 const char *date_str(time_t date);
 int is_date(const char *str);
+int date_cmp(const char *str);

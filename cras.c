@@ -399,8 +399,13 @@ main(int argc, char *argv[])
 		fileptr = argv[optind];
 	}
 
-	if (datearg != NULL && is_date(datearg) < 0)
-		die("Invalid date format.");
+	if (datearg != NULL) {
+		if (is_date(datearg) < 0)
+			die("Invalid date format.");
+
+		if (date_cmp(datearg) < 0)
+			die("Date is in the past.");
+	}
 
 	if ((sline_mode = isatty(STDIN_FILENO)) > 0) {
 		if (sline_setup(0) < 0) /* Set up sline without history */
