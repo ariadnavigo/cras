@@ -185,7 +185,7 @@ print_task_list(void)
 static void
 read_file(const char *fname, int allow_future)
 {
-	int read_stat;
+	int read_stat, date_res;
 	FILE *fp;
 	char date_buf[DATE_SIZE];
 
@@ -199,8 +199,8 @@ read_file(const char *fname, int allow_future)
 	if (read_stat < 0)
 		die("%s: not a cras file.", fname);
 
-	if (task_lst_on_date(list) < 0
-	 || (allow_future == 0 && task_lst_on_date(list) > 0)) {
+	date_res = date_cmp(list.date);
+	if (date_res < 0 || (allow_future == 0 && date_res > 0)) {
 		strlcpy(date_buf, list.date, DATE_SIZE);
 		die("%s: valid on %s.", fname, date_buf);
 	}

@@ -71,12 +71,6 @@ task_lst_set_date(TaskLst *list, const char *date)
 	strlcpy(list->date, date, DATE_SIZE);
 }
 
-int
-task_lst_on_date(TaskLst list)
-{
-	return date_cmp(list.date);
-}
-
 Task *
 task_lst_get_task(TaskLst list, int i)
 {
