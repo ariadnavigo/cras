@@ -310,6 +310,7 @@ input_mode(const char *fname, const char *date, int append)
 		task_lst_set_date(&list, date);
 
 	write_file(fname);
+	fprintf(stderr, "Task list saved.\n");
 }
 
 static void
