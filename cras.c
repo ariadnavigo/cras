@@ -265,6 +265,7 @@ edit_mode(const char *fname, const char *id)
 	task_set_tdesc(task, newstr);
 
 	write_file(fname);
+	fprintf(stderr, "Task #%d edited.\n", tasknum);
 }
 
 static void
