@@ -231,6 +231,7 @@ delete_mode(const char *fname, const char *id)
 		die(TASK_NONEXIST_MSG, tasknum);
 
 	write_file(fname);
+	fprintf(stderr, "Task #%d deleted.\n", tasknum);
 }
 
 static void
