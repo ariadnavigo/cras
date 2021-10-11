@@ -5,7 +5,7 @@
 include config.mk
 
 SRC = cras.c date.c strlcpy.c tasklst.c
-OBJ = ${SRC:%.c=%.o}
+OBJ = ${SRC:.c=.o}
 
 all: options cras
 
