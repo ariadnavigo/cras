@@ -14,9 +14,9 @@ cras \- The Anti-Procrastination Tool
 .SH DESCRIPTION
 .PP
 .B cras 
-is an unapologetic daily task list. 
-It holds your tasks only throughout the day, 
-deleting them afterwards.
+is an unapologetic task list manager for your terminal,
+which makes task lists accessible 
+only before the deadline set by the user.
 .PP
 To set up a new task list, call 
 .B cras 
@@ -27,20 +27,18 @@ option.
 will read each new line from standard input as a new task, 
 until EOF is reached. 
 .PP
-By default, the newly created task list will be readable by 
-.B cras 
-only throughout the day saved on the list.
-Alternatively, you may set the date for a task list file by using
+By default, 
+all newly created task lists have their deadline set to the current day.
+Alternatively, you may set a longer deadline for a task list file by using
 .I \-w
 and providing a date in YYYY-MM-DD format (ISO 8601 extended.)
-This date must be the current or a future date.
+Past dates will not be accepted.
 .PP
 Use
 .I \-t 
 to mark a task as done and 
 .I \-T 
 to mark it back as pending.
-These two operations are only permitted during the day the task list is valid.
 .PP
 Add new tasks to an already existing file using 
 .IR \-a .
@@ -52,11 +50,16 @@ You may similarly edit the description of a task by using the
 option.
 When editing,
 sending EOF or leaving the line blank will abort the operation.
-These three operations can be used on task lists with a current or future date. 
+.PP
+None of the operations listed above on task list
+.I file
+are permitted after the deadline is due.
 .PP
 Running 
 .B cras 
-with no options outputs task lists with a current or future date.
+with no options will output task list
+.I file
+if it is not past its deadline.
 .SH OPTIONS
 .TP
 .B \-a
@@ -90,10 +93,10 @@ as pending.
 Show version information and exit.
 .TP
 .BI \-w " date"
-Set the task file to be valid only on
+Set the task file deadline to 
 .IR date ,
 represented in YYYY-MM-DD format (ISO 8601 extended.)
-Must be the current or a future date.
+Must not be a date in the past.
 .SH EXIT STATUS
 .PP
 Upon successful execution
@@ -132,7 +135,7 @@ To set a task list up:
 .RE
 .fi
 .PP
-To set a task list up for a specific date
+To set a task list up with a specific deadline:
 (e.g. 2021-05-14):
 .PP
 .nf
