@@ -203,7 +203,7 @@ read_file(const char *fname, int allow_future)
 	date_res = date_cmp(list.date);
 	if (date_res < 0 || (allow_future == 0 && date_res > 0)) {
 		strlcpy(date_buf, list.date, DATE_SIZE);
-		die("%s: valid on %s.", fname, date_buf);
+		die("%s: passed deadline (was: %s).", fname, date_buf);
 	}
 }
 
