@@ -1,8 +1,8 @@
 # cras - The Anti-Procrastination Tool
 
-cras is an unapologetic daily task planner and manager for your terminal and WM
-status bar. It holds your tasks only for a limited amount of time (24 hours, by
-default).
+cras is an unapologetic task list manager for your terminal and WM status bar,
+but with a catch: Task lists are accessible only for a limited amount of time 
+set by the user!
 
 ## Build
 
