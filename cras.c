@@ -101,7 +101,7 @@ fd_input(char *linebuf)
 {
 	static int line = 1;
 
-	char trash;
+	int trash;
 	char *last_chr;
 
 	if (fgets(linebuf, TASK_TDESC_SIZE, stdin) == NULL)
