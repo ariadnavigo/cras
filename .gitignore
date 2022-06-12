@@ -1,4 +1,3 @@
 *.o
-*.tar.gz
 config.h
 cras
