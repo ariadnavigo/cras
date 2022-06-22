@@ -4,6 +4,32 @@ cras is an unapologetic task list manager for your terminal and WM status bar,
 but with a catch: Task lists are accessible only for a limited amount of time 
 set by the user!
 
+## Basic usage
+
+cras creates a new task list using the ``-n`` option and a file name. Calling
+cras without any options will show the contents of the task list file. The
+``-t`` option followed by the task's number will mark it as done!
+
+```
+$ cras -n tasks
+#01: Write this new task list
+#02: Another important thing to do
+#03: Don't forget this one either
+#04: To finish, Ctrl+D
+#05:
+Task list saved.
+$ ./cras tasks
+2022-06-22
+#01 [TODO] Write this new task list
+#02 [TODO] Another important thing to do
+#03 [TODO] Don't forget this one either
+#04 [TODO] To finish, Ctrl+D
+$ ./cras -t 3 tasks
+#03 [DONE] Don't forget this one either
+```
+
+You may check the ``cras(1)`` manpage for further usage information.
+
 ## Build
 
 cras requires:
