@@ -393,7 +393,8 @@ main(int argc, char *argv[])
 			datearg = optarg;
 			break;
 		default:
-			usage(); /* usage() dies, so nothing else needed. */
+			usage();
+			break;
 		}
 	}
 
