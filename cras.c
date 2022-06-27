@@ -367,8 +367,9 @@ main(int argc, char *argv[])
 			mode = NEW_MODE;
 			break;
 		case 'v':
-			die("cras %s (sline %s)", VERSION, sline_version());
-			break;
+			printf("cras %s (sline %s)", VERSION, sline_version());
+			putchar('\n'); /* Don't wanna clutter the line above */
+			return 0;
 		case 'd':
 			mode = DLT_MODE;
 			numarg = optarg;
