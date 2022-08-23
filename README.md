@@ -36,8 +36,8 @@ cras requires:
 
 1. A POSIX-like system
 2. A C99 compiler
-3. [sline](https://sr.ht/~arivigo/sline): Unless you really know what you're
-   doing, use the latest release, not the master git branch. 
+3. [sline](https://github.com/ariadnavigo/sline): Unless you really know what 
+   you're doing, use the latest release, not the master git branch. 
 
 Build by using:
 
@@ -66,16 +66,6 @@ environment, or ``/usr/local/bin`` by default. The Makefile supports the
 
 _cras_ means 'tomorrow' in Latin. For instance, the English word 
 _procrastination_ means, literally, 'the act of postponing things for tomorrow.'
-
-## Contributing
-
-All contributions are welcome! If you wish to send in patches, ideas, or report
-a bug, you may do so by sending an email to the 
-[cras-devel](https://lists.sr.ht/~arivigo/cras-devel) mailing list.
-
-If interested in getting some news from the project, you may also want to 
-subscribe to the low-volume 
-[cras-announce](https://lists.sr.ht/~arivigo/cras-announce) mailing list!
 
 ## License
 
