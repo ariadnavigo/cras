@@ -2,7 +2,7 @@
 
 #include <errno.h>
 #include <sline.h>
-#include <stdarg.h>
+#include <stdarg.h> /* Dependency for strlcpy.h */
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
