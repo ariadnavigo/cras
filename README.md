@@ -36,8 +36,7 @@ cras requires:
 
 1. A POSIX-like system
 2. A C99 compiler
-3. [sline](https://github.com/ariadnavigo/sline): Unless you really know what 
-   you're doing, use the latest release, not the master git branch. 
+3. [sline 1.x](https://github.com/ariadnavigo/sline)
 
 Build by using:
 
