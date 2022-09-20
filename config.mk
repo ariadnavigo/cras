@@ -1,5 +1,5 @@
 # cras version
-VERSION = 2.1.7
+VERSION = 2.1.8
 
 # Customize below to your needs
 
