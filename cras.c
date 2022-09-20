@@ -1,9 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <errno.h>
+#include <stddef.h> /* Dependency for sline.h */
 #include <sline.h>
 #include <stdarg.h> /* Dependency for strlcpy.h */
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -415,7 +415,8 @@ main(int argc, char *argv[])
 	}
 
 	if ((sline_mode = isatty(STDIN_FILENO)) > 0) {
-		if (sline_setup(0) < 0) /* Set up sline without history */
+		sline_history = 0; /* Set up sline without history */
+		if (sline_setup() < 0) 
 			die("sline: %s.", sline_errmsg());
 	}
 
