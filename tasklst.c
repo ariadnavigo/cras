@@ -137,13 +137,15 @@ task_lst_del_task(TaskLst *list, int i)
 }
 
 int
-task_lst_get_size(TaskLst list)
+task_lst_get_size(TaskLst list, int filter)
 {
 	Task *ptr;
 	int accu;
 
-	for (accu = 0, ptr = list.first; ptr != NULL; ptr = ptr->next)
-		++accu;
+	for (accu = 0, ptr = list.first; ptr != NULL; ptr = ptr->next) {
+		if (filter == -1 || ptr->status == filter)
+			++accu;
+	}
 
 	return accu;
 }

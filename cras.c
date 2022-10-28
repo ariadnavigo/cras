@@ -281,7 +281,7 @@ input_mode(const char *fname, const char *date, int append)
 	else
 		task_lst_init(&list);
 
-	tasknum = task_lst_get_size(list);
+	tasknum = task_lst_get_size(list, -1);
 	input_stat = 0;
 	while (feof(stdin) == 0) {
 		if (sline_mode > 0) {
