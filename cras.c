@@ -368,10 +368,14 @@ main(int argc, char *argv[])
 	numarg = NULL;
 	datearg = NULL;
 	date = 0;
-	while ((opt = getopt(argc, argv, ":aDnUvd:e:t:T:w:")) != -1) {
+	while ((opt = getopt(argc, argv, ":aADnUvd:e:t:T:w:")) != -1) {
 		switch (opt) {
 		case 'a':
 			mode = APP_MODE;
+			break;
+		case 'A':
+			mode = COUNT_MODE;
+			task_value = -1;
 			break;
 		case 'D':
 			mode = COUNT_MODE;
