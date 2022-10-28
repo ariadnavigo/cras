@@ -20,6 +20,7 @@
 
 enum {
 	APP_MODE,
+	COUNT_MODE,
 	DEF_MODE,
 	DLT_MODE,
 	EDIT_MODE,
@@ -43,6 +44,7 @@ static void read_file(const char *fname, int allow_future);
 static void write_file(const char *fname);
 
 /* Execution modes */
+static void count_mode(const char *fname, int filter);
 static void delete_mode(const char *fname, const char *id);
 static void edit_mode(const char *fname, const char *id);
 static void input_mode(const char *fname, const char *date, int append);
@@ -221,6 +223,13 @@ write_file(const char *fname)
 }
 
 static void
+count_mode(const char *fname, int filter)
+{
+	read_file(fname, 0);
+	printf("%d\n", task_lst_get_size(list, filter));
+}
+
+static void
 delete_mode(const char *fname, const char *id)
 {
 	int tasknum;
@@ -359,13 +368,21 @@ main(int argc, char *argv[])
 	numarg = NULL;
 	datearg = NULL;
 	date = 0;
-	while ((opt = getopt(argc, argv, ":anvd:e:t:T:w:")) != -1) {
+	while ((opt = getopt(argc, argv, ":aDnUvd:e:t:T:w:")) != -1) {
 		switch (opt) {
 		case 'a':
 			mode = APP_MODE;
 			break;
+		case 'D':
+			mode = COUNT_MODE;
+			task_value = TASK_DONE;
+			break;
 		case 'n':
 			mode = NEW_MODE;
+			break;
+		case 'U':
+			mode = COUNT_MODE;
+			task_value = TASK_TODO;
 			break;
 		case 'v':
 			printf("cras %s (sline %s)", VERSION, sline_version());
@@ -423,6 +440,9 @@ main(int argc, char *argv[])
 	switch (mode) {
 	case APP_MODE:
 		input_mode(fileptr, NULL, 1);
+		return 0;
+	case COUNT_MODE:
+		count_mode(fileptr, task_value);
 		return 0;
 	case DLT_MODE:
 		delete_mode(fileptr, numarg);
