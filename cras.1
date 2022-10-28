@@ -5,7 +5,7 @@ cras \- The Anti-Procrastination Tool
 .SH SYNOPSIS
 .PP
 .B cras
-.RB [ \-anv ]
+.RB [ \-aADnUv ]
 .RB [ \-detT 
 .IR num  ]
 .RB [ \-w
@@ -66,9 +66,15 @@ if it is not past its deadline.
 Append new tasks to
 .IR file .
 .TP
+.B \-A
+Print total number of tasks to standard output.
+.TP
 .BI \-d " num"
 Delete task
 .IR num .
+.TP
+.B \-D
+Print number of tasks done to standard output.
 .TP
 .BI \-e " num"
 Edit task
@@ -88,6 +94,9 @@ as done.
 Mark task
 .I num 
 as pending.
+.TP
+.B \-U
+Print number of tasks to do to standard output.
 .TP
 .B \-v
 Show version information and exit.

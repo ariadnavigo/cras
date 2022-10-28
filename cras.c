@@ -81,7 +81,7 @@ cleanup(void)
 static void
 usage(void)
 {
-	die("usage: cras [-anv] [-detT num] [-w date] [file]");
+	die("usage: cras [-aADnUv] [-detT num] [-w date] [file]");
 }
 
 static int
