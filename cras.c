@@ -28,13 +28,11 @@ enum {
 	NEW_MODE
 };
 
-/* Auxiliary functions */
 static void die(const char *fmt, ...);
 static void cleanup(void);
 static void usage(void);
 static int parse_tasknum(const char *id);
 
-/* I/O */
 static int fd_input(char *linebuf);
 static int prompt_input(char *linebuf, const char *initstr);
 static void printf_color(const char *ansi_color, const char *fmt, ...);
@@ -43,7 +41,6 @@ static int print_task_list(void);
 static void read_file(const char *fname, int allow_future);
 static void write_file(const char *fname);
 
-/* Execution modes */
 static void count_mode(const char *fname, int filter);
 static void delete_mode(const char *fname, const char *id);
 static void edit_mode(const char *fname, const char *id);
@@ -53,6 +50,8 @@ static void output_mode(const char *fname);
 
 static TaskLst list;
 static int sline_mode; /* Are we using sline or not? */
+
+/* Auxiliary functions */
 
 static void
 die(const char *fmt, ...)
@@ -98,6 +97,8 @@ parse_tasknum(const char *id)
 
 	return tasknum;
 }
+
+/* I/O */
 
 static int
 fd_input(char *linebuf)
@@ -221,6 +222,8 @@ write_file(const char *fname)
 	task_lst_write_to_file(fp, list);
 	fclose(fp);
 }
+
+/* Execution modes */
 
 static void
 count_mode(const char *fname, int filter)
