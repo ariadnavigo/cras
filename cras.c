@@ -293,6 +293,8 @@ input_mode(const char *fname, const char *date, int append)
 	else
 		task_lst_init(&list);
 
+	printf("Enter to next entry; Ctrl-D saves; Ctrl-C aborts.\n");
+
 	tasknum = task_lst_get_size(list, -1);
 	input_stat = 0;
 	while (feof(stdin) == 0) {
