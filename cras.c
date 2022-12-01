@@ -262,6 +262,8 @@ edit_mode(const char *fname, const char *id)
 	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL)
 		die(TASK_NONEXIST_MSG, tasknum);
 
+	printf("Enter saves; Ctrl-C aborts.\n");
+
 	input_stat = 0;
 	if (sline_mode > 0) {
 		sline_set_prompt("#%02d: ", tasknum);
