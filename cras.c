@@ -262,10 +262,9 @@ edit_mode(const char *fname, const char *id)
 	if ((task = task_lst_get_task(list, tasknum - 1)) == NULL)
 		die(TASK_NONEXIST_MSG, tasknum);
 
-	printf("Enter saves; Ctrl-C aborts.\n");
-
 	input_stat = 0;
 	if (sline_mode > 0) {
+		printf("Enter saves; Ctrl-C aborts.\n");
 		sline_set_prompt("#%02d: ", tasknum);
 		input_stat = prompt_input(newstr, task->tdesc);
 	} else if (fd_input(newstr) < 0) {
@@ -295,7 +294,8 @@ input_mode(const char *fname, const char *date, int append)
 	else
 		task_lst_init(&list);
 
-	printf("Enter to next entry; Ctrl-D saves; Ctrl-C aborts.\n");
+	if (sline_mode > 0)
+		printf("Enter to next entry; Ctrl-D saves; Ctrl-C aborts.\n");
 
 	tasknum = task_lst_get_size(list, -1);
 	input_stat = 0;
