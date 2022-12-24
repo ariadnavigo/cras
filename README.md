@@ -12,19 +12,21 @@ cras without any options will show the contents of the task list file. The
 
 ```
 $ cras -n tasks
+Enter to next entry; Ctrl-D saves; Ctrl-C aborts.
 #01: Write this new task list
 #02: Another important thing to do
 #03: Don't forget this one either
 #04: To finish, Ctrl+D
 #05:
 Task list saved.
-$ ./cras tasks
+$ cras tasks
 2022-06-22
+Enter to next entry; Ctrl-D saves; Ctrl-C aborts.
 #01 [TODO] Write this new task list
 #02 [TODO] Another important thing to do
 #03 [TODO] Don't forget this one either
 #04 [TODO] To finish, Ctrl+D
-$ ./cras -t 3 tasks
+$ cras -t 3 tasks
 #03 [DONE] Don't forget this one either
 ```
 
