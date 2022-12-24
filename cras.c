@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 #include <errno.h>
+#include <signal.h>
 #include <stddef.h> /* Dependency for sline.h */
 #include <sline.h>
 #include <stdarg.h> /* Dependency for strlcpy.h */
@@ -31,6 +32,7 @@ enum {
 static void die(const char *fmt, ...);
 static void cleanup(void);
 static void usage(void);
+static void sig_handler(int signum);
 static int parse_tasknum(const char *id);
 
 static int fd_input(char *linebuf);
@@ -75,6 +77,19 @@ cleanup(void)
 
 	if (sline_mode > 0)
 		sline_end();
+}
+
+static void
+sig_handler(int signum)
+{
+	/* 
+	 * Going low-level here using write() instead of any of the stdio.h 
+	 * subroutines just to be sure sline won't act funny if active.
+	 */
+	write(STDOUT_FILENO, "\n", 1);
+
+	if (signum == SIGINT)
+		die("Aborting: interrupted.");
 }
 
 static void
@@ -368,7 +383,15 @@ main(int argc, char *argv[])
 	char *numarg, *datearg;
 	const char *fileptr;
 	int opt, mode, date, task_value;
+	struct sigaction sa;
 
+	sa.sa_handler = sig_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+		die("Error installing signal handler.");
+	
 	atexit(cleanup);
 
 	mode = DEF_MODE;
