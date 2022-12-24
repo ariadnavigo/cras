@@ -390,7 +390,7 @@ main(int argc, char *argv[])
 	sa.sa_flags = SA_RESTART;
 
 	if (sigaction(SIGINT, &sa, NULL) == -1)
-		die("Error installing signal handler.");
+		die("Could not set up SIGINT handler.");
 	
 	atexit(cleanup);
 
