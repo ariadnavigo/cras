@@ -385,6 +385,8 @@ main(int argc, char *argv[])
 	int opt, mode, date, task_value;
 	struct sigaction sa;
 
+	atexit(cleanup);
+
 	sa.sa_handler = sig_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
@@ -392,8 +394,6 @@ main(int argc, char *argv[])
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 		die("Could not set up SIGINT handler.");
 	
-	atexit(cleanup);
-
 	mode = DEF_MODE;
 	numarg = NULL;
 	datearg = NULL;
